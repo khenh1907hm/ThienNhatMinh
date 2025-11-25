@@ -616,6 +616,7 @@ export const translations = {
       servicesSectionTitle: 'Thien Nhat Minhサービス',
       servicesSectionSubtitle: 'エネルギーソリューション',
       experienceService: 'サービスを体験',
+      contactNow: '今すぐお問い合わせ',
       viewMoreServices: 'サービスをもっと見る',
       projectsTitle: 'プロジェクト',
       featuredProjects: '注目プロジェクト',
