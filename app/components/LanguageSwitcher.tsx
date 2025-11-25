@@ -12,7 +12,7 @@ const languageNames: Record<Locale, string> = {
 
 const languageFlags: Record<Locale, string> = {
   vi: '🇻🇳',
-  en: '🇬🇧',
+  en: 'EN',
   ja: '🇯🇵',
 };
 

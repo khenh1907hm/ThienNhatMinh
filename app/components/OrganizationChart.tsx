@@ -18,7 +18,6 @@ interface OrganizationChartProps {
 
 export default function OrganizationChart({ className = '' }: OrganizationChartProps) {
   const [visibleNodes, setVisibleNodes] = useState<Set<string>>(new Set());
-  const [visibleLines, setVisibleLines] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
 
@@ -131,13 +130,6 @@ export default function OrganizationChart({ className = '' }: OrganizationChartP
       levelNodes.forEach((node, index) => {
         setTimeout(() => {
           setVisibleNodes(prev => new Set([...prev, node.id]));
-          
-          // Show connecting lines after node appears
-          if (node.parentId) {
-            setTimeout(() => {
-              setVisibleLines(prev => new Set([...prev, `${node.parentId}-${node.id}`]));
-            }, 200);
-          }
         }, index * 150);
       });
 
@@ -148,25 +140,6 @@ export default function OrganizationChart({ className = '' }: OrganizationChartP
     animateLevel();
   }, [isInView]);
 
-  const getLinePath = (fromId: string, toId: string): string => {
-    const from = positions[fromId];
-    const to = positions[toId];
-    if (!from || !to) return '';
-
-    const boxHeight = 85;
-    const fromBottom = from.y + boxHeight / 2;
-    const toTop = to.y - boxHeight / 2;
-
-    // For vertical connections (director -> vice director)
-    if (Math.abs(from.x - to.x) < 5) {
-      return `M ${from.x} ${fromBottom} L ${to.x} ${toTop}`;
-    }
-
-    // For connections from vice director to departments
-    // Draw: down from vice director, then horizontal to department, then down to department
-    const midY = (fromBottom + toTop) / 2;
-    return `M ${from.x} ${fromBottom} L ${from.x} ${midY} L ${to.x} ${midY} L ${to.x} ${toTop}`;
-  };
 
   const getBoxWidth = (node: OrgNode): number => {
     // Fixed widths for different levels
@@ -190,30 +163,6 @@ export default function OrganizationChart({ className = '' }: OrganizationChartP
             <span className="text-[#0A3D62]">ORGANIZATION CHART</span>
           </h3>
         </div>
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          style={{ minHeight: '650px' }}
-        >
-          {/* Draw connecting lines */}
-          {nodes
-            .filter(node => node.parentId)
-            .map(node => {
-              const lineId = `${node.parentId}-${node.id}`;
-              const path = getLinePath(node.parentId!, node.id);
-              const isVisible = visibleLines.has(lineId);
-              
-              return (
-                <path
-                  key={lineId}
-                  d={path}
-                  stroke="#000"
-                  strokeWidth="2"
-                  fill="none"
-                  className={`transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-                />
-              );
-            })}
-        </svg>
 
         {/* Render nodes */}
         <div className="relative z-10 w-full h-full">

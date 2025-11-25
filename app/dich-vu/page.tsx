@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useI18n } from '../i18n/context';
 import ScrollAnimation from '../components/ScrollAnimation';
 
@@ -10,68 +11,74 @@ export default function ServicesPage() {
     {
       title: t.services.transformerStation,
       description: t.services.transformerStationDesc,
-      features: [
-        t.services.transformerStationDesc,
-        t.services.transformerStationDesc,
-        t.services.transformerStationDesc,
-        t.services.transformerStationDesc,
-      ],
+      image: '/images/Hệ thống trạm biến áp.jpg',
       icon: '⚡',
     },
     {
       title: t.services.electricalSystem,
       description: t.services.electricalSystemDesc,
-      features: [
-        t.services.electricalSystemDesc,
-        t.services.electricalSystemDesc,
-        t.services.electricalSystemDesc,
-        t.services.electricalSystemDesc,
-      ],
+      image: '/images/Hệ thống điện.jpg',
       icon: '🔌',
     },
     {
       title: t.services.lightingSystem,
       description: t.services.lightingSystemDesc,
-      features: [
-        t.services.lightingSystemDesc,
-        t.services.lightingSystemDesc,
-        t.services.lightingSystemDesc,
-        t.services.lightingSystemDesc,
-      ],
+      image: '/images/hệ thống chiếu sáng.jpg',
       icon: '💡',
     },
     {
-      title: t.services.technicalConsulting,
-      description: t.services.technicalConsultingDesc,
-      features: [
-        t.services.technicalConsultingDesc,
-        t.services.technicalConsultingDesc,
-        t.services.technicalConsultingDesc,
-        t.services.technicalConsultingDesc,
-      ],
-      icon: '📋',
+      title: t.services.lowVoltageSystem,
+      description: t.services.lowVoltageSystemDesc,
+      image: '/images/hệ thống điện nhẹ.jpg',
+      icon: '📡',
     },
     {
-      title: t.services.maintenance,
-      description: t.services.maintenanceDesc,
-      features: [
-        t.services.maintenanceDesc,
-        t.services.maintenanceDesc,
-        t.services.maintenanceDesc,
-        t.services.maintenanceDesc,
-      ],
-      icon: '🔧',
+      title: t.services.fireFightingSystem,
+      description: t.services.fireFightingSystemDesc,
+      image: '/images/hệ thống chữa cháy.jpg',
+      icon: '🚒',
     },
     {
-      title: t.services.renewableEnergy,
-      description: t.services.renewableEnergyDesc,
-      features: [
-        t.services.renewableEnergyDesc,
-        t.services.renewableEnergyDesc,
-        t.services.renewableEnergyDesc,
-        t.services.renewableEnergyDesc,
-      ],
+      title: t.services.solarPowerSystem,
+      description: t.services.solarPowerSystemDesc,
+      image: '/images/hệ thống điện năng lượng mặt trời.jpg',
       icon: '☀️',
+    },
+    {
+      title: t.services.hvacSystem,
+      description: t.services.hvacSystemDesc,
+      image: '/images/HỆ THỐNG ĐIỀU HÒA KHÔNG KHÍ.jpg',
+      icon: '❄️',
+    },
+    {
+      title: t.services.waterSupplyDrainage,
+      description: t.services.waterSupplyDrainageDesc,
+      image: '/images/HỆ THỐNG CẤP THOÁT NƯỚCHỆ THỐNG CẤP THOÁT NƯỚC.jpg',
+      icon: '💧',
+    },
+    {
+      title: t.services.firePreventionSystem,
+      description: t.services.firePreventionSystemDesc,
+      image: '/images/hệ thống phòng cháy.jpg',
+      icon: '🔥',
+    },
+    {
+      title: t.services.auxiliarySupplySystem,
+      description: t.services.auxiliarySupplySystemDesc,
+      image: '/images/HỆ THỐNG CẤP PHỤ TRỢ.jpg',
+      icon: '🔋',
+    },
+    {
+      title: t.services.controlSystem,
+      description: t.services.controlSystemDesc,
+      image: '/images/HỆ THỐNG ĐIỀU KHIỂN.jpg',
+      icon: '🎛️',
+    },
+    {
+      title: t.services.processPipingSystem,
+      description: t.services.processPipingSystemDesc,
+      image: '/images/HỆ THỐNG ỐNG CÔNG NGHỆ.jpg',
+      icon: '🔧',
     },
   ];
 
@@ -83,35 +90,25 @@ export default function ServicesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
               <ScrollAnimation key={index} direction="up" delay={index * 100}>
-                <div className="p-8 bg-gradient-to-br from-white to-[#E1E2E5] rounded-xl border border-gray-200 hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300">
-                  <div className="text-5xl mb-4">{service.icon}</div>
-                  <h3 className="text-2xl font-semibold text-[#0A3D62] mb-3">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-600 mb-6">{service.description}</p>
-                  <ul className="space-y-2 mb-6">
-                    {service.features.slice(0, 4).map((feature, idx) => (
-                      <li key={idx} className="flex items-start text-gray-600">
-                        <svg
-                          className="w-5 h-5 text-[#FFC107] mr-2 mt-0.5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <button className="w-full px-6 py-3 bg-[#0A3D62] text-white rounded-lg font-semibold hover:bg-[#082A47] transform hover:scale-105 transition-all duration-200">
-                    {t.services.contactConsulting}
-                  </button>
+                <div className="bg-gradient-to-br from-white to-[#E1E2E5] rounded-xl border border-gray-200 hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+                  <div className="relative h-48 w-full">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="text-4xl mb-3">{service.icon}</div>
+                    <h3 className="text-xl font-semibold text-[#0A3D62] mb-3">
+                      {service.title}
+                    </h3>
+                    <p className="text-gray-600 mb-6 text-sm">{service.description}</p>
+                    <button className="w-full px-6 py-3 bg-[#0A3D62] text-white rounded-lg font-semibold hover:bg-[#082A47] transform hover:scale-105 transition-all duration-200">
+                      {t.services.contactConsulting}
+                    </button>
+                  </div>
                 </div>
               </ScrollAnimation>
             ))}

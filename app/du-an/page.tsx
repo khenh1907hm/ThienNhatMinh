@@ -1,90 +1,134 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useI18n } from '../i18n/context';
 import ScrollAnimation from '../components/ScrollAnimation';
 
 export default function ProjectsPage() {
   const { t } = useI18n();
-  const [selectedCategory, setSelectedCategory] = useState(t.projects.all);
+  const [activeTab, setActiveTab] = useState('featured');
 
-  const projects = [
-    {
-      title: t.projects.project110kV,
-      category: t.projects.transformerStation,
-      description: t.projects.project110kVDesc,
-      location: t.recruitment.hanoi,
-      year: '2024',
-    },
-    {
-      title: t.projects.industrialElectrical,
-      category: t.projects.electricalSystem,
-      description: t.projects.industrialElectricalDesc,
-      location: t.recruitment.hoChiMinh,
-      year: '2024',
-    },
-    {
-      title: t.projects.smartLighting,
-      category: t.projects.lighting,
-      description: t.projects.smartLightingDesc,
-      location: t.recruitment.daNang,
-      year: '2023',
-    },
-    {
-      title: t.projects.solar5MW,
-      category: t.projects.renewableEnergy,
-      description: t.projects.solar5MWDesc,
-      location: 'Bình Dương',
-      year: '2023',
-    },
-    {
-      title: t.projects.electricalUpgrade,
-      category: t.projects.electricalSystem,
-      description: t.projects.electricalUpgradeDesc,
-      location: 'Hải Phòng',
-      year: '2023',
-    },
-    {
-      title: t.projects.project220kV,
-      category: t.projects.transformerStation,
-      description: t.projects.project220kVDesc,
-      location: 'Quảng Ninh',
-      year: '2022',
-    },
+  // Dự án tiêu biểu
+  const featuredProjects = [
+    { name: 'MEG MILK SNOW BRAND VN' },
+    { name: 'Mabuchi Biên Hòa Solar 1MWp phase 1' },
+    { name: 'FT Pharma – GMP-EU Long Hau Pharmaceutical Factory' },
+    { name: 'KINGSPAN VIỆT NAM SOLAR 1MW' },
+    { name: 'ACCREDO ASIA SOLAR – 1MW' },
+    { name: 'SHOWA SANGYO INTERNATIONAL VIỆT NAM' },
+    { name: 'NHÀ MÁY MỚI ACECOOK VĨNH LONG' },
+    { name: 'ACCREDO ASIA SOLAR – 1MW (PHASE 3)' },
+    { name: 'MURATA MANUFACTURING VN – HCM S&B' },
+    { name: 'OTSUKA THANG NUTRITION CO., LTD – POCARI PHASE 2' },
+    { name: 'Lotte My Phuoc Factory Renovation' },
+    { name: 'Yuwa Vietnam Renovation Project' },
+    { name: 'Mabuchi Danang Solar 1MWp phase 2' },
+    { name: 'Murata Manufacturing Vietnam Co., Ltd' },
+    { name: 'NHÀ MÁY YAZAKI CỦ CHI' },
+    { name: 'KANEKA VIỆT NAM PHASE 3' },
+    { name: 'NHÀ MÁY NIPRO VIỆT NAM' },
+    { name: 'METRO STATION' },
+    { name: 'Suzuki' },
+    { name: 'Siêu thị Aeon Bình Dương' },
+    { name: 'Siêu thị Aeon Bình Tân' },
+    { name: 'Nanoco Building' },
+    { name: 'Estella Height' },
+    { name: 'Sapporo Việt Nam' },
+    { name: 'Nissin Food' },
+    { name: 'Rohto Việt Nam' },
+    { name: 'Otsuka Techno' },
+    { name: 'Wonderful Sài Gòn' },
+    { name: 'Sài gòn Stec' },
   ];
 
-  const categories = [
-    t.projects.all,
-    t.projects.transformerStation,
-    t.projects.electricalSystem,
-    t.projects.lighting,
-    t.projects.renewableEnergy,
+  // Dự án đang thực hiện
+  const inProgressProjects = [
+    { name: 'TAKIGAWA CORPORATION VIETNAM NEW FACTORY' },
+    { name: 'MEG MILK SNOW BRAND VN' },
+    { name: 'OTSUKA THANG NUTRITION CO., LTD – POCARI PHASE 2' },
+    { name: 'MURATA MANUFACTURING VN – HCM S&B' },
+    { name: 'ACCREDO ASIA SOLAR – 1MW (PHASE 3)' },
+    { name: 'NHÀ MÁY MỚI ACECOOK VĨNH LONG' },
+    { name: 'SHOWA SANGYO INTERNATIONAL VIỆT NAM' },
   ];
 
-  const filteredProjects =
-    selectedCategory === t.projects.all
-      ? projects
-      : projects.filter((p) => p.category === selectedCategory);
+  // Dự án đã thực hiện
+  const completedProjects = [
+    { name: 'Murata Manufacturing Vietnam – Solar 438kW' },
+    { name: 'MABUCHI DANANG RENOVATION' },
+    { name: 'ACCREDO ASIA SOLAR – 1MW' },
+    { name: 'KYOKUYO VINA FOODS COMPANY LIMITED – LONG AN BRANCH' },
+    { name: 'MUFG NEW OFFICE' },
+    { name: 'PANASONIC LIFE SOLUTION VIETNAM CO., LTD – PHASE 3 FACTORY' },
+    { name: 'KINGSPAN VIỆT NAM SOLAR 1MW' },
+    { name: 'SMC VIETNAM CO., LTD – SMC NEW 3RD FACTORY – PHASE 2' },
+    { name: 'SMC VIETNAM CO., LTD – SMC NEW 1ST FACTORY – PHASE 3' },
+    { name: 'SMC VIETNAM CO., LTD – SMC NEW 2ND FACTORY – PHASE 3' },
+    { name: 'Mabuchi Biên Hòa Solar 1MWp phase 1' },
+    { name: 'FT Pharma – GMP-EU Long Hau Pharmaceutical Factory' },
+    { name: 'Lotte My Phuoc Factory Renovation' },
+    { name: 'Yuwa Vietnam Renovation Project' },
+    { name: 'Mabuchi Danang Solar 1MWp phase 2' },
+    { name: 'Murata Manufacturing Vietnam Co., Ltd' },
+    { name: 'NHÀ MÁY YAZAKI CỦ CHI' },
+    { name: 'NHÀ MÁY PLUS VIỆT NAM' },
+    { name: 'CMC Creative Space' },
+    { name: 'ELANCO VIỆT NAM' },
+    { name: 'KANEKA VIỆT NAM PHASE 3' },
+    { name: 'NHÀ MÁY NIPRO VIỆT NAM' },
+    { name: 'METRO STATION' },
+  ];
+
+  const getProjectsByTab = () => {
+    switch (activeTab) {
+      case 'featured':
+        return featuredProjects;
+      case 'inProgress':
+        return inProgressProjects;
+      case 'completed':
+        return completedProjects;
+      default:
+        return featuredProjects;
+    }
+  };
 
   return (
     <div className="min-h-screen">
-      {/* Filter Section */}
+      {/* Tabs Section */}
       <section className="py-8 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap gap-4 justify-center">
-            {categories.map((category, index) => (
-              <button
-                key={index}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-2 rounded-full font-medium transition-all duration-200 ${
-                  selectedCategory === category
-                    ? 'bg-[#0A3D62] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
+            <button
+              onClick={() => setActiveTab('featured')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                activeTab === 'featured'
+                  ? 'bg-[#0A3D62] text-white shadow-lg'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Dự án tiêu biểu
+            </button>
+            <button
+              onClick={() => setActiveTab('inProgress')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                activeTab === 'inProgress'
+                  ? 'bg-[#0A3D62] text-white shadow-lg'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Dự án đang thực hiện
+            </button>
+            <button
+              onClick={() => setActiveTab('completed')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                activeTab === 'completed'
+                  ? 'bg-[#0A3D62] text-white shadow-lg'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Dự án đã thực hiện
+            </button>
           </div>
         </div>
       </section>
@@ -92,53 +136,37 @@ export default function ProjectsPage() {
       {/* Projects Grid */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project, index) => (
-              <ScrollAnimation key={index} direction="up" delay={index * 100}>
-                <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 aspect-video cursor-pointer hover:shadow-xl transition-all duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-[#0A3D62] text-white text-sm font-semibold rounded-full">
-                      {project.category}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    <h3 className="text-white font-semibold text-xl mb-2">
-                      {project.title}
-                    </h3>
-                    <p className="text-white/90 text-sm mb-3">
-                      {project.description}
-                    </p>
-                    <div className="flex items-center justify-between text-white/80 text-xs">
-                      <span className="flex items-center">
-                        <svg
-                          className="w-4 h-4 mr-1"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                        {project.location}
-                      </span>
-                      <span>{project.year}</span>
+          {getProjectsByTab().length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {getProjectsByTab().map((project, index) => (
+                <ScrollAnimation key={index} direction="up" delay={index * 50}>
+                  <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-[#0A3D62] flex flex-col">
+                    <div className="relative w-full h-32 mb-4">
+                      <Image
+                        src="/images/bannner-1.jpg"
+                        alt={project.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="px-4 pb-4 text-center">
+                      <h3 className="text-base font-semibold text-[#0A3D62]">
+                        {project.name}
+                      </h3>
                     </div>
                   </div>
-                </div>
-              </ScrollAnimation>
-            ))}
-          </div>
+                </ScrollAnimation>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <p className="text-gray-500 text-lg">
+                {activeTab === 'featured' && 'Chưa có dự án tiêu biểu'}
+                {activeTab === 'inProgress' && 'Chưa có dự án đang thực hiện'}
+                {activeTab === 'completed' && 'Chưa có dự án đã thực hiện'}
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

@@ -196,9 +196,7 @@ export default function ContactPage() {
                         {t.contact.address}
                       </h3>
                       <p className="text-gray-600">
-                        123 Đường ABC, Quận XYZ
-                        <br />
-                        Hà Nội, Việt Nam
+                        {t.contact.addressValue}
                       </p>
                     </div>
                   </div>
@@ -226,12 +224,8 @@ export default function ContactPage() {
                         {t.contact.phone}
                       </h3>
                       <p className="text-gray-600">
-                        <a href="tel:+842412345678" className="hover:text-[#0A3D62]">
-                          +84 24 1234 5678
-                        </a>
-                        <br />
-                        <a href="tel:+84901234567" className="hover:text-[#0A3D62]">
-                          +84 90 123 4567
+                        <a href={`tel:${t.contact.phoneValue.replace(/\s/g, '')}`} className="hover:text-[#0A3D62]">
+                          {t.contact.phoneValue}
                         </a>
                       </p>
                     </div>
@@ -261,17 +255,10 @@ export default function ContactPage() {
                       </h3>
                       <p className="text-gray-600">
                         <a
-                          href="mailto:info@thiennhatminh.com"
+                          href={`mailto:${t.contact.emailValue}`}
                           className="hover:text-[#0A3D62]"
                         >
-                          info@thiennhatminh.com
-                        </a>
-                        <br />
-                        <a
-                          href="mailto:support@thiennhatminh.com"
-                          className="hover:text-[#0A3D62]"
-                        >
-                          support@thiennhatminh.com
+                          {t.contact.emailValue}
                         </a>
                       </p>
                     </div>
@@ -307,12 +294,20 @@ export default function ContactPage() {
                 </ScrollAnimation>
               </div>
 
-              {/* Map Placeholder */}
-              <ScrollAnimation direction="up" delay={500}>
-                <div className="mt-8 rounded-xl overflow-hidden border border-gray-200">
-                  <div className="aspect-video bg-gradient-to-br from-[#E1E2E5] to-gray-200 flex items-center justify-center">
-                    <p className="text-gray-500">{t.contact.mapPlaceholder}</p>
-                  </div>
+              {/* Google Map */}
+              <ScrollAnimation direction="up" delay={600}>
+                <div className="mt-6 rounded-xl overflow-hidden border border-gray-200 shadow-lg">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.231239826!2d106.62911931483667!3d10.84183739227075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752a3c5e5b5b5b%3A0x5b5b5b5b5b5b5b5b!2zNzUgTmd1eeG7hW4gQ-G7uSDEkOG7i25oLCBQaMaw4buNbmcgVMOibiBTxqFuIE5o4bqldSwgVGjDoG5oIFBow7ogTWluaCwgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1735123456789!5m2!1svi!2s"
+                    width="100%"
+                    height="400"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="w-full"
+                    title="Công ty TNHH Thiên Nhật Minh - 75 Nguyễn Cửu Đàm, Phường Tân Sơn Nhì, TP. Hồ Chí Minh"
+                  />
                 </div>
               </ScrollAnimation>
             </div>

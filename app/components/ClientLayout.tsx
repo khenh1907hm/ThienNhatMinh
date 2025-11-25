@@ -3,6 +3,7 @@
 import { I18nProvider } from '../i18n/context';
 import Navigation from './Navigation';
 import Footer from './Footer';
+import FloatingButtons from './FloatingButtons';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         {children}
       </main>
       <Footer />
+      <FloatingButtons />
     </I18nProvider>
   );
 }

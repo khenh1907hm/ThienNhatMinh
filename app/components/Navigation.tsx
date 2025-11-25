@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { useI18n } from '../i18n/context';
 import LanguageSwitcher from './LanguageSwitcher';
 
 const Navigation = () => {
   const { t } = useI18n();
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -19,10 +21,22 @@ const Navigation = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Smooth scroll to top when pathname changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pathname]);
+
   const getLocalizedPath = (path: string) => {
     // Don't add locale to path, just return the path as-is
     // Locale is stored in cookie, not URL
     return path;
+  };
+
+  const handleLinkClick = () => {
+    // Close mobile menu if open
+    setIsMobileMenuOpen(false);
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navLinks = [
@@ -44,35 +58,43 @@ const Navigation = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-24">
           {/* Logo */}
-          <Link href={getLocalizedPath('/')} className="flex items-center space-x-3 group">
-            <div className="relative w-12 h-12 transform group-hover:scale-110 transition-transform">
+          <Link href={getLocalizedPath('/')} className="flex items-center group">
+            <div className="flex relative w-24 h-24 md:w-28 md:h-28 transform group-hover:scale-105 transition-transform">
               <Image
                 src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
                 alt="Thiên Nhật Minh Logo"
-                width={48}
-                height={48}
+                width={112}
+                height={112}
                 className="object-contain"
                 priority
               />
             </div>
-            <span className="text-xl font-bold text-gray-900 hidden sm:block">
-              Thiên Nhật Minh
-            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6 flex-1 justify-center">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={getLocalizedPath(link.href)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-[#0A3D62] rounded-lg hover:bg-[#E1E2E5] transition-all duration-200"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={getLocalizedPath(link.href)}
+                  onClick={handleLinkClick}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 relative ${
+                    isActive
+                      ? 'text-[#0A3D62] bg-[#E1E2E5] font-semibold'
+                      : 'text-gray-700 hover:text-[#0A3D62] hover:bg-[#E1E2E5]'
+                  }`}
+                >
+                  {link.label}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-[#0A3D62] rounded-full"></span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Utilities */}
@@ -107,16 +129,23 @@ const Navigation = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 space-y-2 animate-in slide-in-from-top">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={getLocalizedPath(link.href)}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-[#0A3D62] hover:bg-[#E1E2E5] rounded-lg transition-all duration-200"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={getLocalizedPath(link.href)}
+                  onClick={handleLinkClick}
+                  className={`block px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? 'text-[#0A3D62] bg-[#E1E2E5] font-semibold'
+                      : 'text-gray-700 hover:text-[#0A3D62] hover:bg-[#E1E2E5]'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
             <div className="px-4 py-3">
               <LanguageSwitcher />
             </div>

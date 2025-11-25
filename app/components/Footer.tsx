@@ -1,13 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useI18n } from '../i18n/context';
+import Image from 'next/image';
 import { useState } from 'react';
 import ScrollAnimation from './ScrollAnimation';
 
 const Footer = () => {
-  const { t } = useI18n();
-  const currentYear = new Date().getFullYear();
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -41,34 +39,38 @@ const Footer = () => {
               <div className="space-y-3 text-sm">
                 <p className="font-semibold">CÔNG TY TNHH THIÊN NHẬT MINH</p>
                 <p>
-                  <span className="font-semibold">Địa chỉ:</span> 75 Nguyễn Cửu Đàm, Phường Tân Sơn Nhì, TP Hồ Chí Minh
+                  <span className="font-semibold">Địa chỉ:</span> 75 Nguyễn Cửu Đàm, Phường Tân Sơn Nhì, TP. Hồ Chí Minh
                 </p>
                 <p>
-                  <span className="font-semibold">Điện Thoại:</span> 0903 444 444
+                  <span className="font-semibold">Điện Thoại:</span> 0983 449 446
                 </p>
                 <p>
-                  <span className="font-semibold">Email:</span> ng.luu.ga@thiennhatminh.com
+                  <span className="font-semibold">Email:</span> ng.luan@thiennhatminh.com
                 </p>
                 <div className="pt-4 space-y-2 text-xs">
                   <p>
-                    <span className="font-semibold">Giấy chứng nhận đăng ký doanh nghiệp số:</span> 0303 500 774
+                    <span className="font-semibold">Giấy chứng đăng ký danh nghiệp số:</span> 0303 590 774
                   </p>
                   <p>
-                    <span className="font-semibold">Nơi cấp:</span> Sở Kế hoạch và Đầu tư TP. HCM
+                    <span className="font-semibold">Nơi cấp:</span> Sở Kế Hoạch và Đầu Tư Tp. HCM
                   </p>
                   <p>
-                    <span className="font-semibold">Đăng ký ngày:</span> 17/12/2004
+                    <span className="font-semibold">Đăng ký lần đầu:</span> 17/12/2004
                   </p>
                   <p>
-                    <span className="font-semibold">Đăng ký thay đổi lần 8:</span> 16/01/2023
+                    <span className="font-semibold">Đăng ký thay đổi lần 8:</span> 16/01/2025
                   </p>
                 </div>
                 <div className="pt-4">
-                  <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg inline-flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-xs">ĐÃ THÔNG BÁO BỘ CÔNG THƯƠNG</span>
+                  <div className="inline-flex items-center">
+                    <Image
+                      src="/images/logo xác thực.png"
+                      alt="Logo xác thực - Đã thông báo Bộ Công Thương"
+                      width={200}
+                      height={80}
+                      className="object-contain"
+                      unoptimized
+                    />
                   </div>
                 </div>
               </div>
@@ -138,7 +140,7 @@ const Footer = () => {
               <h3 className="text-xl font-bold mb-4">BẢN ĐỒ</h3>
               <div className="rounded-lg overflow-hidden shadow-lg">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.231239826!2d106.62911931483667!3d10.84183739227075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752a3c5e5b5b5b%3A0x5b5b5b5b5b5b5b5b!2zNzUgTmd1eeG7hW4gQ-G7uSDEkOG7i25oLCBQaMaw4buNbmcgVMOibiBTxqFuIE5o4bqldSwgVGjDoG5oIFBow7ogTWluaCwgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1234567890123!5m2!1svi!2s"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.231239826!2d106.62911931483667!3d10.84183739227075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752a3c5e5b5b5b%3A0x5b5b5b5b5b5b5b5b!2zNzUgTmd1eeG7hW4gQ-G7uSDEkOG7i25oLCBQaMaw4buNbmcgVMOibiBTxqFuIE5o4bqldSwgVGjDoG5oIFBow7ogTWluaCwgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1735123456789!5m2!1svi!2s"
                   width="100%"
                   height="300"
                   style={{ border: 0 }}
@@ -146,6 +148,7 @@ const Footer = () => {
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   className="w-full"
+                  title="Công ty TNHH Thiên Nhật Minh - 75 Nguyễn Cửu Đàm, Phường Tân Sơn Nhì, TP. Hồ Chí Minh"
                 />
               </div>
               <div className="flex items-center justify-end gap-4 mt-4">
@@ -168,7 +171,7 @@ const Footer = () => {
                   </svg>
                 </a>
                 <a
-                  href="tel:0903444444"
+                  href="tel:0983449446"
                   className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
                   aria-label="Phone"
                 >
@@ -181,9 +184,7 @@ const Footer = () => {
           </ScrollAnimation>
         </div>
 
-        <div className="border-t border-white/20 pt-8 mt-8 text-center text-sm">
-          <p>&copy; {currentYear} Thiên Nhật Minh. {t.footer.allRightsReserved}</p>
-        </div>
+       
       </div>
     </footer>
   );
