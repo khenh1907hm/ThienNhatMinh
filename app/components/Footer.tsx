@@ -4,8 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import ScrollAnimation from './ScrollAnimation';
+import { useI18n } from '../i18n/context';
 
 const Footer = () => {
+  const { t } = useI18n();
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -17,7 +19,7 @@ const Footer = () => {
     e.preventDefault();
     // Handle form submission
     console.log('Form submitted:', formData);
-    alert('Cảm ơn bạn đã đăng ký! Chúng tôi sẽ liên hệ sớm nhất có thể.');
+    alert(t.footer.thankYouMessage);
     setFormData({ name: '', phone: '', email: '', content: '' });
   };
 
@@ -35,30 +37,30 @@ const Footer = () => {
           {/* Contact Information */}
           <ScrollAnimation direction="up" delay={0}>
             <div>
-              <h3 className="text-xl font-bold mb-4">THÔNG TIN LIÊN HỆ</h3>
+              <h3 className="text-xl font-bold mb-4">{t.footer.contactInfo}</h3>
               <div className="space-y-3 text-sm">
-                <p className="font-semibold">CÔNG TY TNHH THIÊN NHẬT MINH</p>
+                <p className="font-semibold">{t.contact.companyName}</p>
                 <p>
-                  <span className="font-semibold">Địa chỉ:</span> 75 Nguyễn Cửu Đàm, Phường Tân Sơn Nhì, TP. Hồ Chí Minh
+                  <span className="font-semibold">{t.contact.address}:</span> {t.contact.addressValue}
                 </p>
                 <p>
-                  <span className="font-semibold">Điện Thoại:</span> 0983 449 446
+                  <span className="font-semibold">{t.contact.phone}:</span> {t.contact.phoneValue}
                 </p>
                 <p>
-                  <span className="font-semibold">Email:</span> ng.luan@thiennhatminh.com
+                  <span className="font-semibold">{t.contact.email}:</span> {t.contact.emailValue}
                 </p>
                 <div className="pt-4 space-y-2 text-xs">
                   <p>
-                    <span className="font-semibold">Giấy chứng đăng ký danh nghiệp số:</span> 0303 590 774
+                    <span className="font-semibold">{t.contact.businessLicense}:</span> {t.contact.businessLicenseValue}
                   </p>
                   <p>
-                    <span className="font-semibold">Nơi cấp:</span> Sở Kế Hoạch và Đầu Tư Tp. HCM
+                    <span className="font-semibold">{t.contact.issuedBy}:</span> {t.contact.issuedByValue}
                   </p>
                   <p>
-                    <span className="font-semibold">Đăng ký lần đầu:</span> 17/12/2004
+                    <span className="font-semibold">{t.contact.firstRegistration}:</span> {t.contact.firstRegistrationValue}
                   </p>
                   <p>
-                    <span className="font-semibold">Đăng ký thay đổi lần 8:</span> 16/01/2025
+                    <span className="font-semibold">{t.contact.changeRegistration}:</span> {t.contact.changeRegistrationValue}
                   </p>
                 </div>
                 <div className="pt-4">
@@ -80,12 +82,12 @@ const Footer = () => {
           {/* Consultation Form */}
           <ScrollAnimation direction="up" delay={200}>
             <div>
-              <h3 className="text-xl font-bold mb-4">ĐĂNG KÝ TƯ VẤN</h3>
+              <h3 className="text-xl font-bold mb-4">{t.footer.registerConsultation}</h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <input
                   type="text"
                   name="name"
-                  placeholder="Họ và tên"
+                  placeholder={t.footer.namePlaceholder}
                   value={formData.name}
                   onChange={handleChange}
                   required
@@ -94,7 +96,7 @@ const Footer = () => {
                 <input
                   type="tel"
                   name="phone"
-                  placeholder="Số điện thoại"
+                  placeholder={t.footer.phonePlaceholder}
                   value={formData.phone}
                   onChange={handleChange}
                   required
@@ -103,7 +105,7 @@ const Footer = () => {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email"
+                  placeholder={t.footer.emailPlaceholder}
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -111,7 +113,7 @@ const Footer = () => {
                 />
                 <textarea
                   name="content"
-                  placeholder="Nội dung"
+                  placeholder={t.footer.contentPlaceholder}
                   value={formData.content}
                   onChange={handleChange}
                   rows={4}
@@ -122,14 +124,14 @@ const Footer = () => {
                   type="submit"
                   className="w-full px-6 py-3 bg-[#FFC107] hover:bg-[#FFB300] text-[#0A3D62] font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
                 >
-                  Đăng ký ngay
+                  {t.footer.registerNow}
                 </button>
               </form>
               <Link
                 href="#"
                 className="text-xs text-white/80 hover:text-white mt-4 inline-block underline"
               >
-                Chính sách bảo vệ thông tin cá nhân
+                {t.footer.privacyPolicy}
               </Link>
             </div>
           </ScrollAnimation>
@@ -137,10 +139,10 @@ const Footer = () => {
           {/* Map */}
           <ScrollAnimation direction="up" delay={400}>
             <div>
-              <h3 className="text-xl font-bold mb-4">BẢN ĐỒ</h3>
+              <h3 className="text-xl font-bold mb-4">{t.footer.map}</h3>
               <div className="rounded-lg overflow-hidden shadow-lg">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.231239826!2d106.62911931483667!3d10.84183739227075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752a3c5e5b5b5b%3A0x5b5b5b5b5b5b5b5b!2zNzUgTmd1eeG7hW4gQ-G7uSDEkOG7i25oLCBQaMaw4buNbmcgVMOibiBTxqFuIE5o4bqldSwgVGjDoG5oIFBow7ogTWluaCwgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1735123456789!5m2!1svi!2s"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3587.4568057418655!2d106.62700961012753!3d10.799335358727287!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317529561b0e8f63%3A0xf7635c9839753ab5!2zNzUgTmd1eeG7hW4gQ-G7rXUgxJDDoG0sIFTDom4gU8ahbiBOaMOsLCBUw6JuIFBow7osIFRow6BuaCBwaOG7kSBI4buTIENow60gTWluaCA3MDAwMCwgVmnhu4d0IE5hbQ!5e1!3m2!1svi!2s!4v1764127880192!5m2!1svi!2s"
                   width="100%"
                   height="300"
                   style={{ border: 0 }}

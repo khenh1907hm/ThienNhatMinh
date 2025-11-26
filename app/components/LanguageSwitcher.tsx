@@ -20,19 +20,33 @@ export default function LanguageSwitcher() {
   const { locale, setLocale } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
 
+  const getLocaleButtonClasses = (loc: Locale) => {
+    switch (loc) {
+      case 'vi':
+        return 'bg-red-600 text-white hover:bg-red-700';
+      case 'ja':
+        return 'bg-sky-500 text-white hover:bg-sky-600';
+      case 'en':
+      default:
+        return 'bg-white text-gray-800 hover:bg-gray-100 border border-gray-300';
+    }
+  };
+
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${getLocaleButtonClasses(
+          locale
+        )}`}
         aria-label="Change language"
       >
         <span className="text-lg">{languageFlags[locale]}</span>
-        <span className="text-sm font-medium text-gray-700 hidden sm:inline">
-          {languageNames[locale]}
-        </span>
+        <span className="hidden sm:inline">{languageNames[locale]}</span>
         <svg
-          className={`w-4 h-4 text-gray-600 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 transition-transform ${
+            isOpen ? 'rotate-180' : ''
+          } ${locale === 'en' ? 'text-gray-600' : 'text-white'}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -60,17 +74,17 @@ export default function LanguageSwitcher() {
                   setLocale(loc);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors ${
-                  locale === loc ? 'bg-blue-50' : ''
-                }`}
+                className={`w-full flex items-center space-x-3 px-4 py-2 text-left transition-colors rounded-md mb-1 last:mb-0 ${getLocaleButtonClasses(
+                  loc
+                )} ${locale === loc ? 'ring-2 ring-offset-1 ring-[#0A3D62]' : ''}`}
               >
                 <span className="text-lg">{languageFlags[loc]}</span>
-                <span className="text-sm font-medium text-gray-700">
-                  {languageNames[loc]}
-                </span>
+                <span className="text-sm font-medium">{languageNames[loc]}</span>
                 {locale === loc && (
                   <svg
-                    className="w-4 h-4 text-blue-600 ml-auto"
+                    className={`w-4 h-4 ml-auto ${
+                      loc === 'en' ? 'text-[#0A3D62]' : 'text-white'
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

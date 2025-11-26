@@ -298,7 +298,7 @@ export default function ContactPage() {
               <ScrollAnimation direction="up" delay={600}>
                 <div className="mt-6 rounded-xl overflow-hidden border border-gray-200 shadow-lg">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.231239826!2d106.62911931483667!3d10.84183739227075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752a3c5e5b5b5b%3A0x5b5b5b5b5b5b5b5b!2zNzUgTmd1eeG7hW4gQ-G7uSDEkOG7i25oLCBQaMaw4buNbmcgVMOibiBTxqFuIE5o4bqldSwgVGjDoG5oIFBow7ogTWluaCwgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1735123456789!5m2!1svi!2s"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3587.4568057418655!2d106.62700961012753!3d10.799335358727287!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317529561b0e8f63%3A0xf7635c9839753ab5!2zNzUgTmd1eeG7hW4gQ-G7rXUgxJDDoG0sIFTDom4gU8ahbiBOaMOsLCBUw6JuIFBow7osIFRow6BuaCBwaOG7kSBI4buTIENow60gTWluaCA3MDAwMCwgVmnhu4d0IE5hbQ!5e1!3m2!1svi!2s!4v1764127880192!5m2!1svi!2s"
                     width="100%"
                     height="400"
                     style={{ border: 0 }}

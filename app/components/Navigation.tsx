@@ -15,7 +15,7 @@ const Navigation = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 0);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -53,9 +53,17 @@ const Navigation = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-lg'
-          : 'bg-transparent'
+          ? 'shadow-lg'
+          : ''
       }`}
+      style={{
+        backgroundImage: `url('/images/header backround.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+        backdropFilter: isScrolled ? 'blur(8px)' : 'none',
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-24">
@@ -74,7 +82,7 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6 flex-1 justify-center">
+          <div className="hidden md:flex items-center space-x-1 flex-1 justify-center">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -82,15 +90,18 @@ const Navigation = () => {
                   key={link.href}
                   href={getLocalizedPath(link.href)}
                   onClick={handleLinkClick}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 relative ${
+                  className={`px-4 py-2 text-sm font-medium transition-all duration-300 relative ${
                     isActive
-                      ? 'text-[#0A3D62] bg-[#E1E2E5] font-semibold'
-                      : 'text-gray-700 hover:text-[#0A3D62] hover:bg-[#E1E2E5]'
+                      ? 'text-[#0A3D62] font-semibold'
+                      : 'text-gray-700 hover:text-[#0A3D62]'
                   }`}
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-[#0A3D62] rounded-full"></span>
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0A3D62] rounded-full"></span>
+                  )}
+                  {!isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0A3D62] rounded-full scale-x-0 hover:scale-x-100 transition-transform duration-300 origin-center"></span>
                   )}
                 </Link>
               );
@@ -128,7 +139,7 @@ const Navigation = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-2 animate-in slide-in-from-top">
+          <div className="md:hidden py-4 space-y-1 animate-in slide-in-from-top">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -136,13 +147,16 @@ const Navigation = () => {
                   key={link.href}
                   href={getLocalizedPath(link.href)}
                   onClick={handleLinkClick}
-                  className={`block px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
+                  className={`block px-4 py-3 text-base font-medium transition-all duration-200 relative ${
                     isActive
-                      ? 'text-[#0A3D62] bg-[#E1E2E5] font-semibold'
-                      : 'text-gray-700 hover:text-[#0A3D62] hover:bg-[#E1E2E5]'
+                      ? 'text-[#0A3D62] font-semibold bg-[#E1E2E5]/50'
+                      : 'text-gray-700 hover:text-[#0A3D62] hover:bg-[#E1E2E5]/30'
                   }`}
                 >
                   {link.label}
+                  {isActive && (
+                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#0A3D62] rounded-r-full"></span>
+                  )}
                 </Link>
               );
             })}
