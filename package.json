@@ -9,11 +9,20 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.0",
+    "@tiptap/extension-image": "^3.11.1",
+    "@tiptap/extension-link": "^3.11.1",
+    "@tiptap/extension-text-align": "^3.11.1",
+    "@tiptap/extension-underline": "^3.11.1",
+    "@tiptap/react": "^3.11.1",
+    "@tiptap/starter-kit": "^3.11.1",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
     "next": "16.0.3",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "resend": "^6.5.2",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

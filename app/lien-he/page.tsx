@@ -13,11 +13,53 @@ export default function ContactPage() {
     subject: '',
     message: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert(t.contact.thankYou);
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: 'success',
+          message: result.message || t.contact.thankYou,
+        });
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: '',
+        });
+      } else {
+        setSubmitStatus({
+          type: 'error',
+          message: result.error || 'Có lỗi xảy ra. Vui lòng thử lại.',
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Không thể kết nối đến server. Vui lòng thử lại sau.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -149,12 +191,28 @@ export default function ContactPage() {
                     />
                   </div>
                 </ScrollAnimation>
+                {submitStatus && (
+                  <div
+                    className={`p-4 rounded-lg ${
+                      submitStatus.type === 'success'
+                        ? 'bg-green-50 text-green-800 border border-green-200'
+                        : 'bg-red-50 text-red-800 border border-red-200'
+                    }`}
+                  >
+                    {submitStatus.message}
+                  </div>
+                )}
                 <ScrollAnimation direction="up" delay={600}>
                   <button
                     type="submit"
-                    className="w-full px-8 py-4 bg-[#0A3D62] text-white rounded-lg font-semibold hover:bg-[#082A47] transform hover:scale-105 transition-all duration-200 shadow-lg"
+                    disabled={isSubmitting}
+                    className={`w-full px-8 py-4 bg-[#0A3D62] text-white rounded-lg font-semibold transform transition-all duration-200 shadow-lg ${
+                      isSubmitting
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'hover:bg-[#082A47] hover:scale-105'
+                    }`}
                   >
-                    {t.contact.send}
+                    {isSubmitting ? 'Đang gửi...' : t.contact.send}
                   </button>
                 </ScrollAnimation>
               </form>

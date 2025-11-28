@@ -148,18 +148,16 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      {/* Fixed Background Layer for entire page */}
-      <div
-        className="fixed inset-0 -z-10 pointer-events-none"
-        style={{
-          backgroundImage: `url('/images/main_background.png')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-        }}
-      ></div>
+    <div
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: "url('/images/main_background.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'bottom center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+      }}
+    >
       
       {/* Hero Carousel */}
       <HeroCarousel slides={heroSlides} />
@@ -305,7 +303,7 @@ export default function Home() {
       <BackgroundReveal
         backgroundImage="/images/main_background.png"
         overlayColor="white"
-        overlayOpacity={0.3}
+        overlayOpacity={0.1}
       >
         <div className="grid lg:grid-cols-2 gap-12 items-start mb-16">
             <ScrollAnimation direction="right" delay={0}>
@@ -524,7 +522,7 @@ export default function Home() {
       <BackgroundReveal
         backgroundImage="/images/main_background.png"
         overlayColor="white"
-        overlayOpacity={0.3}
+        overlayOpacity={0.1}
       >
         <ScrollAnimation direction="up">
           <h2 className="text-4xl font-bold text-gray-900 text-center mb-12">
