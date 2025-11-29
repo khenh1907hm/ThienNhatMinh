@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../i18n/context';
 import ScrollAnimation from '../components/ScrollAnimation';
 
-export default function ContactPage() {
+function ContactForm() {
   const { t } = useI18n();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
@@ -406,5 +406,19 @@ export default function ContactPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Đang tải...</p>
+        </div>
+      </div>
+    }>
+      <ContactForm />
+    </Suspense>
   );
 }
