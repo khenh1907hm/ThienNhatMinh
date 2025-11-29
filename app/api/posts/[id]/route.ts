@@ -30,14 +30,19 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const bySlug = searchParams.get('by') === 'slug';
 
-    let query = supabase
-      .from('posts')
-      .select('*');
-
+    let query;
     if (bySlug) {
-      query = query.eq('slug', id).single();
+      query = supabase
+        .from('posts')
+        .select('*')
+        .eq('slug', id)
+        .single();
     } else {
-      query = query.eq('id', id).single();
+      query = supabase
+        .from('posts')
+        .select('*')
+        .eq('id', id)
+        .single();
     }
 
     const { data, error } = await query;

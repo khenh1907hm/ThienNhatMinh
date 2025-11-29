@@ -50,6 +50,13 @@ export default function BackgroundReveal({
     <section
       ref={ref}
       className={`py-20 relative overflow-hidden ${className}`}
+      style={{
+        backgroundImage: `url('${backgroundImage}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+      }}
     >
       {/* Overlay - chỉ overlay thay đổi khi scroll đến */}
       <div 
@@ -72,7 +79,7 @@ export default function BackgroundReveal({
       ></div>
       
       {/* Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="relative z-10">
         {children}
       </div>
     </section>

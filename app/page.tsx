@@ -498,7 +498,11 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="py-20 bg-gray-50">
+      <BackgroundReveal
+        backgroundImage="/images/main_background.png"
+        overlayColor="white"
+        overlayOpacity={0.1}
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up">
             <div className="text-center mb-12">
@@ -578,7 +582,7 @@ export default function Home() {
             </Link>
           </div>
         </div>
-      </section>
+      </BackgroundReveal>
 
       {/* Customer Carousel */}
       <section className="py-12 bg-white">
