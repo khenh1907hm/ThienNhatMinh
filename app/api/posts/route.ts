@@ -24,10 +24,13 @@ export async function GET(request: NextRequest) {
 
     if (!supabase) {
       console.error('❌ Database not configured - Supabase client is null');
+      const isProduction = process.env.NODE_ENV === 'production';
       return NextResponse.json(
         { 
           error: 'Database not configured',
-          details: 'Supabase client is null. Please check SUPABASE_URL and SUPABASE_ANON_KEY in .env.local'
+          details: isProduction
+            ? 'Supabase client is null. Please add SUPABASE_URL, SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY to Vercel Environment Variables. See HUONG_DAN_VERCEL_ENV.md for details.'
+            : 'Supabase client is null. Please check SUPABASE_URL and SUPABASE_ANON_KEY in .env.local'
         },
         { status: 500 }
       );

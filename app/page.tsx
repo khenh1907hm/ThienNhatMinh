@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ScrollAnimation from './components/ScrollAnimation';
-import HeroCarousel from './components/HeroCarousel';
+import HeroSection from './components/HeroSection';
 import CustomerCarousel from './components/CustomerCarousel';
 import BackgroundReveal from './components/BackgroundReveal';
 import { useI18n } from './i18n/context';
@@ -33,18 +33,6 @@ export default function Home() {
     return path;
   };
 
-  // Hero Carousel Slides
-  const heroSlides = [
-    {
-      image: '/images/bannner-1.jpg',
-    },
-    {
-      image: '/images/banner2.png',
-    },
-    {
-      image: '/images/banner3.png',
-    },
-  ];
 
 
   // Projects Data
@@ -233,9 +221,9 @@ export default function Home() {
       }}
     >
       
-      {/* Hero Carousel - Hidden on mobile */}
+      {/* Hero Section - Hidden on mobile */}
       <div className="hidden md:block">
-        <HeroCarousel slides={heroSlides} />
+        <HeroSection />
       </div>
 
       {/* About Section - Redesigned */}
@@ -381,7 +369,8 @@ export default function Home() {
         overlayColor="white"
         overlayOpacity={0.1}
       >
-        <div className="grid lg:grid-cols-2 gap-12 items-start mb-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-start mb-16">
             <ScrollAnimation direction="right" delay={0}>
               <div>
                 <h2 className="text-4xl font-bold text-gray-900 mb-6">
@@ -414,6 +403,7 @@ export default function Home() {
               </div>
             </ScrollAnimation>
           </div>
+        </div>
         </BackgroundReveal>
 
       {/* News Section - New Layout */}
@@ -607,11 +597,12 @@ export default function Home() {
         overlayColor="white"
         overlayOpacity={0.1}
       >
-        <ScrollAnimation direction="up">
-          <h2 className="text-4xl font-bold text-gray-900 text-center mb-12">
-            {t.home.projectsTitle}
-          </h2>
-        </ScrollAnimation>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollAnimation direction="up">
+            <h2 className="text-4xl font-bold text-gray-900 text-center mb-12">
+              {t.home.projectsTitle}
+            </h2>
+          </ScrollAnimation>
 
           {/* Tabs */}
           <ScrollAnimation direction="up" delay={200}>
@@ -693,6 +684,7 @@ export default function Home() {
               </p>
             </div>
           )}
+        </div>
         </BackgroundReveal>
 
       {/* Products Section */}
@@ -702,7 +694,8 @@ export default function Home() {
         overlayOpacity={0.85}
         className="text-white"
       >
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <ScrollAnimation direction="right" delay={0}>
               <div>
                 <h2 className="text-5xl font-bold mb-4">
@@ -782,6 +775,7 @@ export default function Home() {
               </div>
             </ScrollAnimation>
           </div>
+        </div>
         </BackgroundReveal>
     </div>
   );
