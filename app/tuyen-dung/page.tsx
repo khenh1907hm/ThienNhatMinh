@@ -1,10 +1,12 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useI18n } from '../i18n/context';
 import ScrollAnimation from '../components/ScrollAnimation';
 
 export default function RecruitmentPage() {
   const { t } = useI18n();
+  const router = useRouter();
 
   const positions = [
     {
@@ -60,14 +62,14 @@ export default function RecruitmentPage() {
   return (
     <div className="min-h-screen">
       {/* Why Join Us */}
-      <section className="py-20 bg-white">
+      <section className="py-12 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={0}>
-            <h2 className="text-4xl font-bold text-[#0A3D62] mb-12 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#0A3D62] mb-8 md:mb-12 text-center">
               {t.recruitment.whyChooseUs}
             </h2>
           </ScrollAnimation>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {[
               {
                 title: t.recruitment.workEnvironment,
@@ -187,7 +189,10 @@ export default function RecruitmentPage() {
                       </div>
                     </div>
                     <div className="md:ml-8 mt-4 md:mt-0">
-                      <button className="w-full md:w-auto px-8 py-3 bg-[#0A3D62] text-white rounded-lg font-semibold hover:bg-[#082A47] transform hover:scale-105 transition-all duration-200">
+                      <button 
+                        onClick={() => router.push('/lien-he?subject=recruitment')}
+                        className="w-full md:w-auto px-8 py-3 bg-[#0A3D62] text-white rounded-lg font-semibold hover:bg-[#082A47] transform hover:scale-105 transition-all duration-200"
+                      >
                         {t.recruitment.applyNow}
                       </button>
                     </div>

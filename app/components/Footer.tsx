@@ -13,6 +13,7 @@ const Footer = () => {
     phone: '',
     email: '',
     content: '',
+    honeypot: '', // Honeypot field - should remain empty
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -30,6 +31,7 @@ const Footer = () => {
         phone: formData.phone,
         subject: 'Đăng ký tư vấn từ Footer',
         message: formData.content,
+        honeypot: formData.honeypot, // Honeypot field
       };
 
       const response = await fetch('/api/contact', {
@@ -40,6 +42,14 @@ const Footer = () => {
         body: JSON.stringify(contactData),
       });
 
+      // Kiểm tra response có phải JSON không
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ Non-JSON response:', text);
+        throw new Error('Server trả về lỗi không hợp lệ');
+      }
+
       const result = await response.json();
 
       if (response.ok) {
@@ -48,7 +58,7 @@ const Footer = () => {
           message: result.message || t.footer.thankYouMessage,
         });
         // Reset form
-        setFormData({ name: '', phone: '', email: '', content: '' });
+        setFormData({ name: '', phone: '', email: '', content: '', honeypot: '' });
       } else {
         setSubmitStatus({
           type: 'error',
@@ -174,6 +184,16 @@ const Footer = () => {
                     {submitStatus.message}
                   </div>
                 )}
+                {/* Honeypot field - hidden from users but visible to bots */}
+                <input
+                  type="text"
+                  name="honeypot"
+                  value={formData.honeypot}
+                  onChange={handleChange}
+                  style={{ display: 'none' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
                 <button
                   type="submit"
                   disabled={isSubmitting}

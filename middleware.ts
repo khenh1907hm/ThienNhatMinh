@@ -17,6 +17,23 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Protect /admin route - require authentication
+  if (pathname.startsWith('/admin')) {
+    const session = request.cookies.get('admin_session');
+    if (!session) {
+      // Redirect to login if not authenticated
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+
+  // Redirect from /login to /admin if already authenticated
+  if (pathname === '/login') {
+    const session = request.cookies.get('admin_session');
+    if (session) {
+      return NextResponse.redirect(new URL('/admin', request.url));
+    }
+  }
+
   // Remove locale from pathname if it exists (for cleanup)
   const pathSegments = pathname.split('/').filter(Boolean);
   const firstSegment = pathSegments[0];

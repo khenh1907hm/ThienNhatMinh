@@ -46,7 +46,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-screen overflow-hidden" style={{ minHeight: '100vh' }}>
       {/* Slides */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (
@@ -60,11 +60,17 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
               src={slide.image}
               alt={`Hero slide ${index + 1}`}
               fill
-              className="object-cover object-center"
+              className="object-cover"
               priority={index === 0}
-              quality={75}
+              quality={90}
               sizes="100vw"
-              style={{ objectFit: 'cover' }}
+              style={{ 
+                objectFit: 'cover',
+                objectPosition: 'center center',
+                width: '100%',
+                height: '100%'
+              }}
+              unoptimized={false}
             />
           </div>
         ))}
@@ -73,7 +79,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
       {/* Navigation Arrows */}
       <button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-200 z-10"
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-200 z-20"
         aria-label="Previous slide"
       >
         <svg
@@ -92,7 +98,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
       </button>
       <button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-200 z-10"
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-200 z-20"
         aria-label="Next slide"
       >
         <svg
@@ -111,7 +117,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
       </button>
 
       {/* Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
         {slides.map((_, index) => (
           <button
             key={index}

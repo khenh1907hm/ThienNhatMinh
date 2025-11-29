@@ -16,7 +16,7 @@ const supabase = supabaseUrl && supabaseKey
 // GET - Get single post by ID or slug
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     if (!supabase) {
@@ -26,7 +26,7 @@ export async function GET(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const bySlug = searchParams.get('by') === 'slug';
 
@@ -65,24 +65,29 @@ export async function GET(
 // PUT - Update post
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    console.log('=== PUT Request Received ===');
+    console.log('SUPABASE_URL:', process.env.SUPABASE_URL ? 'Set' : 'Missing');
+    console.log('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set' : 'Missing');
+    console.log('SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY ? 'Set' : 'Missing');
+    console.log('Supabase client:', supabase ? 'Initialized' : 'NULL');
+    
     if (!supabase) {
+      console.error('❌ Supabase not configured');
       return NextResponse.json(
         { error: 'Database not configured' },
         { status: 500 }
       );
     }
 
-    // TODO: Add authentication check
-    // const authHeader = request.headers.get('authorization');
-    // if (!authHeader || !isValidToken(authHeader)) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-
-    const { id } = params;
+    const { id } = await params;
+    console.log('=== Updating Post ===');
+    console.log('Post ID:', id);
+    
     const body = await request.json();
+    console.log('Request body:', body);
     const { title, content, excerpt, image, category, published } = body;
 
     // Build update object
@@ -108,6 +113,8 @@ export async function PUT(
       updateData.published = published === true || published === 'true';
     }
 
+    console.log('Update data:', updateData);
+    
     const { data, error } = await supabase
       .from('posts')
       .update(updateData)
@@ -116,6 +123,10 @@ export async function PUT(
       .single();
 
     if (error) {
+      console.error('❌ Supabase update error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
       if (error.code === 'PGRST116') {
         return NextResponse.json(
           { error: 'Bài viết không tồn tại' },
@@ -124,6 +135,8 @@ export async function PUT(
       }
       throw error;
     }
+
+    console.log('✅ Update successful:', data);
 
     return NextResponse.json(
       { 
@@ -152,23 +165,26 @@ export async function PUT(
 // DELETE - Delete post
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    console.log('=== DELETE Request Received ===');
+    console.log('SUPABASE_URL:', process.env.SUPABASE_URL ? 'Set' : 'Missing');
+    console.log('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set' : 'Missing');
+    console.log('SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY ? 'Set' : 'Missing');
+    console.log('Supabase client:', supabase ? 'Initialized' : 'NULL');
+    
     if (!supabase) {
+      console.error('❌ Supabase not configured');
       return NextResponse.json(
         { error: 'Database not configured' },
         { status: 500 }
       );
     }
 
-    // TODO: Add authentication check
-    // const authHeader = request.headers.get('authorization');
-    // if (!authHeader || !isValidToken(authHeader)) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-
-    const { id } = params;
+    const { id } = await params;
+    console.log('=== Deleting Post ===');
+    console.log('Post ID:', id);
 
     const { error } = await supabase
       .from('posts')
@@ -176,8 +192,13 @@ export async function DELETE(
       .eq('id', id);
 
     if (error) {
+      console.error('❌ Supabase delete error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
       throw error;
     }
+
+    console.log('✅ Delete successful');
 
     return NextResponse.json(
       { 

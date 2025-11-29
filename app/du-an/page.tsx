@@ -96,12 +96,12 @@ export default function ProjectsPage() {
   return (
     <div className="min-h-screen">
       {/* Tabs Section */}
-      <section className="py-8 bg-white border-b border-gray-200">
+      <section className="py-6 md:py-8 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-wrap gap-2 md:gap-4 justify-center">
             <button
               onClick={() => setActiveTab('featured')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+              className={`px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold transition-all duration-200 ${
                 activeTab === 'featured'
                   ? 'bg-[#0A3D62] text-white shadow-lg'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -111,7 +111,7 @@ export default function ProjectsPage() {
             </button>
             <button
               onClick={() => setActiveTab('inProgress')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+              className={`px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold transition-all duration-200 ${
                 activeTab === 'inProgress'
                   ? 'bg-[#0A3D62] text-white shadow-lg'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -121,7 +121,7 @@ export default function ProjectsPage() {
             </button>
             <button
               onClick={() => setActiveTab('completed')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+              className={`px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold transition-all duration-200 ${
                 activeTab === 'completed'
                   ? 'bg-[#0A3D62] text-white shadow-lg'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'

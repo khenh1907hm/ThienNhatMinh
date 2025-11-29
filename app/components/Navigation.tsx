@@ -66,10 +66,10 @@ const Navigation = () => {
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-24">
+        <div className="flex items-center justify-between h-20 md:h-24">
           {/* Logo */}
           <Link href={getLocalizedPath('/')} className="flex items-center group">
-            <div className="flex relative w-24 h-24 md:w-28 md:h-28 transform group-hover:scale-105 transition-transform">
+            <div className="flex relative w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 transform group-hover:scale-105 transition-transform">
               <Image
                 src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
                 alt="Thiên Nhật Minh Logo"

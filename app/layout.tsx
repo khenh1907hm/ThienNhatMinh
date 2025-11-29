@@ -24,6 +24,7 @@ export default function RootLayout({
     <html lang="vi" className="scroll-smooth">
       <body
         className={`${inter.variable} font-sans antialiased bg-white text-gray-900`}
+        suppressHydrationWarning
       >
         <ClientLayout>
         {children}

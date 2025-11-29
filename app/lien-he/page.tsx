@@ -1,18 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../i18n/context';
 import ScrollAnimation from '../components/ScrollAnimation';
 
 export default function ContactPage() {
   const { t } = useI18n();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     subject: '',
     message: '',
+    honeypot: '', // Honeypot field - should remain empty
   });
+
+  // Điền sẵn subject từ query param
+  useEffect(() => {
+    const subjectParam = searchParams.get('subject');
+    if (subjectParam) {
+      setFormData(prev => ({
+        ...prev,
+        subject: subjectParam,
+      }));
+    }
+  }, [searchParams]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -30,6 +44,14 @@ export default function ContactPage() {
         body: JSON.stringify(formData),
       });
 
+      // Kiểm tra response có phải JSON không
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ Non-JSON response:', text);
+        throw new Error('Server trả về lỗi không hợp lệ');
+      }
+
       const result = await response.json();
 
       if (response.ok) {
@@ -44,6 +66,7 @@ export default function ContactPage() {
           phone: '',
           subject: '',
           message: '',
+          honeypot: '',
         });
       } else {
         setSubmitStatus({
@@ -74,13 +97,13 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen">
       {/* Contact Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
             {/* Contact Form */}
             <div>
               <ScrollAnimation direction="up" delay={0}>
-                <h2 className="text-3xl font-bold text-[#0A3D62] mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#0A3D62] mb-4 md:mb-6">
                   {t.contact.sendMessage}
                 </h2>
               </ScrollAnimation>
@@ -191,6 +214,16 @@ export default function ContactPage() {
                     />
                   </div>
                 </ScrollAnimation>
+                {/* Honeypot field - hidden from users but visible to bots */}
+                <input
+                  type="text"
+                  name="honeypot"
+                  value={formData.honeypot}
+                  onChange={handleChange}
+                  style={{ display: 'none' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
                 {submitStatus && (
                   <div
                     className={`p-4 rounded-lg ${
@@ -221,7 +254,7 @@ export default function ContactPage() {
             {/* Contact Info */}
             <div>
               <ScrollAnimation direction="up" delay={0}>
-                <h2 className="text-3xl font-bold text-[#0A3D62] mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#0A3D62] mb-4 md:mb-6">
                   {t.contact.contactInfo}
                 </h2>
               </ScrollAnimation>

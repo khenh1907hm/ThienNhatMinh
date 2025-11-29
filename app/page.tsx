@@ -1,16 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import ScrollAnimation from './components/ScrollAnimation';
 import HeroCarousel from './components/HeroCarousel';
 import CustomerCarousel from './components/CustomerCarousel';
 import BackgroundReveal from './components/BackgroundReveal';
 import { useI18n } from './i18n/context';
 
+interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  category: string | null;
+  excerpt: string | null;
+  image: string | null;
+  content: string;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export default function Home() {
   const { t } = useI18n();
+  const router = useRouter();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
 
   const getLocalizedPath = (path: string) => {
     return path;
@@ -114,8 +131,42 @@ export default function Home() {
     }
   };
 
-  // News Data
-  const news = [
+  // Fetch posts from database
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      setLoadingPosts(true);
+      const res = await fetch('/api/posts?published=true&limit=3');
+      const data = await res.json();
+
+      if (res.ok && data.posts) {
+        setPosts(data.posts);
+      }
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      // Ensure consistent formatting to avoid hydration mismatch
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch {
+      return dateString;
+    }
+  };
+
+  // Fallback news data if no posts from database
+  const fallbackNews = [
     {
       title: 'Xu hướng năng lượng tái tạo năm 2024',
       excerpt: 'Các xu hướng mới trong lĩnh vực năng lượng tái tạo và cách áp dụng vào thực tế...',
@@ -135,6 +186,17 @@ export default function Home() {
       date: '05/01/2024',
     },
   ];
+
+  // Use posts from database or fallback
+  const news = posts.length > 0 
+    ? posts.map(post => ({
+        title: post.title,
+        excerpt: post.excerpt || post.content.substring(0, 100) + '...',
+        image: post.image || '/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png',
+        date: formatDate(post.created_at),
+        slug: post.slug,
+      }))
+    : fallbackNews;
 
 
   // Customer images
@@ -159,11 +221,13 @@ export default function Home() {
       }}
     >
       
-      {/* Hero Carousel */}
-      <HeroCarousel slides={heroSlides} />
+      {/* Hero Carousel - Hidden on mobile */}
+      <div className="hidden md:block">
+        <HeroCarousel slides={heroSlides} />
+      </div>
 
       {/* About Section - Redesigned */}
-      <section className="py-20 bg-gradient-to-br from-[#E1E2E5] to-white relative overflow-hidden">
+      <section className="py-12 md:py-20 bg-gradient-to-br from-[#E1E2E5] to-white relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
@@ -175,18 +239,18 @@ export default function Home() {
           {/* Header */}
           <ScrollAnimation direction="up" delay={0}>
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-[#0A3D62] mb-4">
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-[#0A3D62] mb-4">
                 {t.home.aboutSectionTitle}
               </h2>
-              <div className="w-24 h-1 bg-[#FFC107] mx-auto mb-6"></div>
-              <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+              <div className="w-24 h-1 bg-[#FFC107] mx-auto mb-4 md:mb-6"></div>
+              <p className="text-base md:text-lg lg:text-xl text-gray-700 max-w-3xl mx-auto px-4">
                 {t.home.aboutSectionDescription}
               </p>
             </div>
           </ScrollAnimation>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-16">
             {[
               { number: '20+', label: 'Năm kinh nghiệm', icon: '📅' },
               { number: '500+', label: 'Dự án hoàn thành', icon: '🏗️' },
@@ -194,10 +258,10 @@ export default function Home() {
               { number: '50+', label: 'Nhân viên', icon: '💼' },
             ].map((stat, index) => (
               <ScrollAnimation key={index} direction="up" delay={index * 100}>
-                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-[#E1E2E5] text-center">
-                  <div className="text-4xl mb-3">{stat.icon}</div>
-                  <div className="text-4xl font-bold text-[#0A3D62] mb-2">{stat.number}</div>
-                  <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+                <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-[#E1E2E5] text-center">
+                  <div className="text-2xl md:text-4xl mb-2 md:mb-3">{stat.icon}</div>
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0A3D62] mb-1 md:mb-2">{stat.number}</div>
+                  <div className="text-xs md:text-sm text-gray-600 font-medium">{stat.label}</div>
                 </div>
               </ScrollAnimation>
             ))}
@@ -341,11 +405,11 @@ export default function Home() {
         </BackgroundReveal>
 
       {/* News Section - New Layout */}
-      <section className="py-20 bg-white">
+      <section className="py-12 md:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 {t.home.newsTitle}
               </h2>
               <div className="w-24 h-1 bg-[#FFC107] mx-auto"></div>
@@ -359,23 +423,23 @@ export default function Home() {
                 <article className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                   <div className="relative h-64 md:h-80">
                     <Image
-                      src={news[0].image}
-                      alt={news[0].title}
+                      src={news[0]?.image || '/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png'}
+                      alt={news[0]?.title || 'Bài viết'}
                       fill
                       className="object-cover"
                     />
                   </div>
                   <div className="p-6">
                     <h3 className="text-2xl md:text-3xl font-bold text-[#0A3D62] mb-4">
-                      {news[0].title}
+                      {news[0]?.title || 'Đang tải...'}
                     </h3>
                     <p className="text-gray-600 mb-4 leading-relaxed">
-                      {news[0].excerpt}
+                      {news[0]?.excerpt || 'Đang tải nội dung...'}
                     </p>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-500 text-sm">{news[0].date}</span>
+                      <span className="text-gray-500 text-sm">{news[0]?.date || ''}</span>
                       <Link
-                        href={getLocalizedPath('/tin-tuc')}
+                        href={news[0]?.slug ? getLocalizedPath(`/tin-tuc/${news[0].slug}`) : getLocalizedPath('/tin-tuc')}
                         className="text-[#0A3D62] font-semibold hover:text-[#082A47] inline-flex items-center"
                       >
                         {t.home.readMore}
@@ -392,12 +456,15 @@ export default function Home() {
             {/* Sidebar - Right Column */}
             <div className="space-y-6">
               {news.slice(1).map((item, index) => (
-                <ScrollAnimation key={index} direction="up" delay={(index + 1) * 100}>
-                  <article className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
+                <ScrollAnimation key={item.slug || index} direction="up" delay={(index + 1) * 100}>
+                  <article 
+                    className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+                    onClick={() => item.slug && router.push(`/tin-tuc/${item.slug}`)}
+                  >
                     <div className="flex gap-4">
                       <div className="relative w-24 h-24 flex-shrink-0">
                         <Image
-                          src={item.image}
+                          src={item.image || '/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png'}
                           alt={item.title}
                           fill
                           className="object-cover"

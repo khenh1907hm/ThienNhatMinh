@@ -10,14 +10,14 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       {/* Introduction Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 md:py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="prose prose-lg max-w-none">
             <ScrollAnimation direction="up" delay={0}>
-              <h2 className="text-4xl font-bold text-[#0A3D62] mb-8 text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-[#0A3D62] mb-6 md:mb-8 text-center">
                 {t.about.aboutUs}
               </h2>
-              <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              <p className="text-base md:text-lg text-gray-700 mb-4 md:mb-6 leading-relaxed">
                 {t.about.aboutUsText1}
               </p>
               
