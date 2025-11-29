@@ -165,30 +165,42 @@ export default function Home() {
     }
   };
 
+  // Type for news items
+  type NewsItem = {
+    title: string;
+    excerpt: string;
+    image: string;
+    date: string;
+    slug?: string;
+  };
+
   // Fallback news data if no posts from database
-  const fallbackNews = [
+  const fallbackNews: NewsItem[] = [
     {
       title: 'Xu hướng năng lượng tái tạo năm 2024',
       excerpt: 'Các xu hướng mới trong lĩnh vực năng lượng tái tạo và cách áp dụng vào thực tế...',
       image: '/images/bannner-1.jpg',
       date: '15/01/2024',
+      slug: undefined,
     },
     {
       title: 'Công nghệ trạm biến áp thông minh',
       excerpt: 'Giới thiệu về công nghệ trạm biến áp thông minh và lợi ích của nó...',
       image: '/images/banner2.png',
       date: '10/01/2024',
+      slug: undefined,
     },
     {
       title: 'Tiết kiệm năng lượng với hệ thống LED',
       excerpt: 'Làm thế nào để tiết kiệm năng lượng với hệ thống chiếu sáng LED...',
       image: '/images/banner3.png',
       date: '05/01/2024',
+      slug: undefined,
     },
   ];
 
   // Use posts from database or fallback
-  const news = posts.length > 0 
+  const news: NewsItem[] = posts.length > 0 
     ? posts.map(post => ({
         title: post.title,
         excerpt: post.excerpt || post.content.substring(0, 100) + '...',
