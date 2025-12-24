@@ -41,8 +41,24 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
     const published = searchParams.get('published'); // 'true' or 'false' or null (all)
     const category = searchParams.get('category');
+    const projectType = searchParams.get('project_type');
+    const excludeCategoriesParam = searchParams.get('exclude_categories');
 
-    console.log('Query params:', { limit, offset, published, category });
+    const excludeCategories = excludeCategoriesParam
+      ? excludeCategoriesParam
+          .split(',')
+          .map((value) => decodeURIComponent(value).trim())
+          .filter(Boolean)
+      : [];
+
+    console.log('Query params:', {
+      limit,
+      offset,
+      published,
+      category,
+      projectType,
+      excludeCategories,
+    });
 
     // Note: RLS policy should allow SELECT all posts for admin
     let query = supabase
@@ -60,6 +76,11 @@ export async function GET(request: NextRequest) {
     // Filter by category
     if (category) {
       query = query.eq('category', category);
+    }
+
+    // Filter by project_type (only for projects)
+    if (projectType) {
+      query = query.eq('project_type', projectType);
     }
 
     // Pagination
@@ -80,13 +101,26 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`✅ Successfully fetched ${data?.length || 0} posts`);
+    // Apply excludeCategories filtering on server side (in-memory)
+    const filteredData =
+      Array.isArray(data) && excludeCategories.length > 0
+        ? data.filter(
+            (post: any) =>
+              !post?.category || !excludeCategories.includes(post.category)
+          )
+        : data || [];
+
+    console.log(
+      `✅ Successfully fetched ${data?.length || 0} posts (after filter: ${
+        filteredData?.length || 0
+      })`
+    );
     console.log('===========================');
 
     return NextResponse.json(
       { 
-        posts: data || [],
-        total: data?.length || 0 
+        posts: filteredData,
+        total: filteredData?.length || 0 
       },
       { status: 200 }
     );
@@ -119,7 +153,7 @@ export async function POST(request: NextRequest) {
     // }
 
     const body = await request.json();
-    const { title, content, excerpt, image, category, published = false } = body;
+    const { title, content, excerpt, image, category, published = false, project_type } = body;
 
     // Validate required fields
     if (!title || !content) {
@@ -137,8 +171,12 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
 
+    // Set default logo if no image provided
+    const defaultLogoUrl = '/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png';
+    const finalImage = image || defaultLogoUrl;
+
     console.log('=== Creating Post ===');
-    console.log('Data:', { title, slug, category, published });
+    console.log('Data:', { title, slug, category, published, project_type });
 
     const { data, error } = await supabase
       .from('posts')
@@ -148,8 +186,9 @@ export async function POST(request: NextRequest) {
           slug,
           content,
           excerpt: excerpt || null,
-          image: image || null,
+          image: finalImage,
           category: category || null,
+          project_type: project_type || null,
           published: published === true || published === 'true',
         },
       ])

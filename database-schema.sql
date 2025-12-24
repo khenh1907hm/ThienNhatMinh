@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS posts (
   excerpt TEXT,
   image VARCHAR(500),
   category VARCHAR(100),
+  project_type VARCHAR(50), -- Loại dự án: 'tieu-bieu', 'dang-thuc-hien', 'da-thuc-hien' (chỉ áp dụng khi category = 'Dự án')
   published BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -33,6 +34,7 @@ CREATE TABLE IF NOT EXISTS contact_submissions (
 CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(published, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
 CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
+CREATE INDEX IF NOT EXISTS idx_posts_project_type ON posts(project_type) WHERE category = 'Dự án';
 CREATE INDEX IF NOT EXISTS idx_contact_created ON contact_submissions(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_contact_email ON contact_submissions(email);
 

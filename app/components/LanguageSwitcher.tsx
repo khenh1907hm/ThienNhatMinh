@@ -36,7 +36,7 @@ export default function LanguageSwitcher() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${getLocaleButtonClasses(
+        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full transition-colors text-sm font-medium min-w-[100px] ${getLocaleButtonClasses(
           locale
         )}`}
         aria-label="Change language"
@@ -66,7 +66,7 @@ export default function LanguageSwitcher() {
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+          <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-2xl shadow-lg border border-gray-200 z-20 overflow-hidden">
             {locales.map((loc) => (
               <button
                 key={loc}
@@ -74,15 +74,17 @@ export default function LanguageSwitcher() {
                   setLocale(loc);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center space-x-3 px-4 py-2 text-left transition-colors rounded-md mb-1 last:mb-0 ${getLocaleButtonClasses(
+                className={`w-full flex items-center justify-between gap-3 px-4 py-3 text-left transition-colors first:rounded-t-2xl last:rounded-b-2xl ${getLocaleButtonClasses(
                   loc
-                )} ${locale === loc ? 'ring-2 ring-offset-1 ring-[#0A3D62]' : ''}`}
+                )} ${locale === loc ? 'ring-2 ring-[#0A3D62]' : ''}`}
               >
-                <span className="text-lg">{languageFlags[loc]}</span>
-                <span className="text-sm font-medium">{languageNames[loc]}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">{languageFlags[loc]}</span>
+                  <span className="text-sm font-medium">{languageNames[loc]}</span>
+                </div>
                 {locale === loc && (
                   <svg
-                    className={`w-4 h-4 ml-auto ${
+                    className={`w-4 h-4 flex-shrink-0 ${
                       loc === 'en' ? 'text-[#0A3D62]' : 'text-white'
                     }`}
                     fill="none"

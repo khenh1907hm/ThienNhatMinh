@@ -1,96 +1,66 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useI18n } from '../i18n/context';
 import ScrollAnimation from '../components/ScrollAnimation';
+
+interface Project {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  image: string | null;
+  content: string;
+  project_type: string | null;
+  created_at: string;
+}
 
 export default function ProjectsPage() {
   const { t } = useI18n();
   const [activeTab, setActiveTab] = useState('featured');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Dự án tiêu biểu
-  const featuredProjects = [
-    { name: 'MEG MILK SNOW BRAND VN' },
-    { name: 'Mabuchi Biên Hòa Solar 1MWp phase 1' },
-    { name: 'FT Pharma – GMP-EU Long Hau Pharmaceutical Factory' },
-    { name: 'KINGSPAN VIỆT NAM SOLAR 1MW' },
-    { name: 'ACCREDO ASIA SOLAR – 1MW' },
-    { name: 'SHOWA SANGYO INTERNATIONAL VIỆT NAM' },
-    { name: 'NHÀ MÁY MỚI ACECOOK VĨNH LONG' },
-    { name: 'ACCREDO ASIA SOLAR – 1MW (PHASE 3)' },
-    { name: 'MURATA MANUFACTURING VN – HCM S&B' },
-    { name: 'OTSUKA THANG NUTRITION CO., LTD – POCARI PHASE 2' },
-    { name: 'Lotte My Phuoc Factory Renovation' },
-    { name: 'Yuwa Vietnam Renovation Project' },
-    { name: 'Mabuchi Danang Solar 1MWp phase 2' },
-    { name: 'Murata Manufacturing Vietnam Co., Ltd' },
-    { name: 'NHÀ MÁY YAZAKI CỦ CHI' },
-    { name: 'KANEKA VIỆT NAM PHASE 3' },
-    { name: 'NHÀ MÁY NIPRO VIỆT NAM' },
-    { name: 'METRO STATION' },
-    { name: 'Suzuki' },
-    { name: 'Siêu thị Aeon Bình Dương' },
-    { name: 'Siêu thị Aeon Bình Tân' },
-    { name: 'Nanoco Building' },
-    { name: 'Estella Height' },
-    { name: 'Sapporo Việt Nam' },
-    { name: 'Nissin Food' },
-    { name: 'Rohto Việt Nam' },
-    { name: 'Otsuka Techno' },
-    { name: 'Wonderful Sài Gòn' },
-    { name: 'Sài gòn Stec' },
-  ];
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch(`/api/posts?category=${encodeURIComponent('Dự án')}&published=true`);
+        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(data.error || 'Không thể tải danh sách dự án');
+        }
 
-  // Dự án đang thực hiện
-  const inProgressProjects = [
-    { name: 'TAKIGAWA CORPORATION VIETNAM NEW FACTORY' },
-    { name: 'MEG MILK SNOW BRAND VN' },
-    { name: 'OTSUKA THANG NUTRITION CO., LTD – POCARI PHASE 2' },
-    { name: 'MURATA MANUFACTURING VN – HCM S&B' },
-    { name: 'ACCREDO ASIA SOLAR – 1MW (PHASE 3)' },
-    { name: 'NHÀ MÁY MỚI ACECOOK VĨNH LONG' },
-    { name: 'SHOWA SANGYO INTERNATIONAL VIỆT NAM' },
-  ];
+        setProjects(data.posts || []);
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+        setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải dự án');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Dự án đã thực hiện
-  const completedProjects = [
-    { name: 'Murata Manufacturing Vietnam – Solar 438kW' },
-    { name: 'MABUCHI DANANG RENOVATION' },
-    { name: 'ACCREDO ASIA SOLAR – 1MW' },
-    { name: 'KYOKUYO VINA FOODS COMPANY LIMITED – LONG AN BRANCH' },
-    { name: 'MUFG NEW OFFICE' },
-    { name: 'PANASONIC LIFE SOLUTION VIETNAM CO., LTD – PHASE 3 FACTORY' },
-    { name: 'KINGSPAN VIỆT NAM SOLAR 1MW' },
-    { name: 'SMC VIETNAM CO., LTD – SMC NEW 3RD FACTORY – PHASE 2' },
-    { name: 'SMC VIETNAM CO., LTD – SMC NEW 1ST FACTORY – PHASE 3' },
-    { name: 'SMC VIETNAM CO., LTD – SMC NEW 2ND FACTORY – PHASE 3' },
-    { name: 'Mabuchi Biên Hòa Solar 1MWp phase 1' },
-    { name: 'FT Pharma – GMP-EU Long Hau Pharmaceutical Factory' },
-    { name: 'Lotte My Phuoc Factory Renovation' },
-    { name: 'Yuwa Vietnam Renovation Project' },
-    { name: 'Mabuchi Danang Solar 1MWp phase 2' },
-    { name: 'Murata Manufacturing Vietnam Co., Ltd' },
-    { name: 'NHÀ MÁY YAZAKI CỦ CHI' },
-    { name: 'NHÀ MÁY PLUS VIỆT NAM' },
-    { name: 'CMC Creative Space' },
-    { name: 'ELANCO VIỆT NAM' },
-    { name: 'KANEKA VIỆT NAM PHASE 3' },
-    { name: 'NHÀ MÁY NIPRO VIỆT NAM' },
-    { name: 'METRO STATION' },
-  ];
+    fetchProjects();
+  }, []);
 
+  // Filter projects theo loại dự án dựa trên activeTab
   const getProjectsByTab = () => {
-    switch (activeTab) {
-      case 'featured':
-        return featuredProjects;
-      case 'inProgress':
-        return inProgressProjects;
-      case 'completed':
-        return completedProjects;
-      default:
-        return featuredProjects;
+    if (!activeTab || activeTab === 'featured') {
+      // Dự án tiêu biểu
+      return projects.filter((p) => p.project_type === 'tieu-bieu');
+    } else if (activeTab === 'inProgress') {
+      // Dự án đang thực hiện
+      return projects.filter((p) => p.project_type === 'dang-thuc-hien');
+    } else if (activeTab === 'completed') {
+      // Dự án đã thực hiện
+      return projects.filter((p) => p.project_type === 'da-thuc-hien');
     }
+    return [];
   };
 
   return (
@@ -107,7 +77,7 @@ export default function ProjectsPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Dự án tiêu biểu
+              {t.home.featuredProjects}
             </button>
             <button
               onClick={() => setActiveTab('inProgress')}
@@ -117,7 +87,7 @@ export default function ProjectsPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Dự án đang thực hiện
+              {t.home.inProgressProjects}
             </button>
             <button
               onClick={() => setActiveTab('completed')}
@@ -127,7 +97,7 @@ export default function ProjectsPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Dự án đã thực hiện
+              {t.home.completedProjects}
             </button>
           </div>
         </div>
@@ -136,25 +106,40 @@ export default function ProjectsPage() {
       {/* Projects Grid */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {getProjectsByTab().length > 0 ? (
+          {loading ? (
+            <div className="text-center py-20">
+              <p className="text-gray-500 text-lg">Đang tải danh sách dự án...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-red-500 text-lg">{error}</p>
+            </div>
+          ) : getProjectsByTab().length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {getProjectsByTab().map((project, index) => (
-                <ScrollAnimation key={index} direction="up" delay={index * 50}>
-                  <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-[#0A3D62] flex flex-col">
-                    <div className="relative w-full h-32 mb-4">
-                      <Image
-                        src="/images/bannner-1.jpg"
-                        alt={project.name}
-                        fill
-                        className="object-cover"
-                      />
+                <ScrollAnimation key={project.id} direction="up" delay={index * 50}>
+                  <Link href={`/du-an/${project.slug}`}>
+                    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-[#0A3D62] flex flex-col h-full cursor-pointer">
+                      <div className="relative w-full h-32 mb-4">
+                        <Image
+                          src={project.image || '/images/bannner-1.jpg'}
+                          alt={project.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="px-4 pb-4 text-center flex-1 flex flex-col">
+                        <h3 className="text-base font-semibold text-[#0A3D62] mb-2 line-clamp-2">
+                          {project.title}
+                        </h3>
+                        {project.excerpt && (
+                          <p className="text-sm text-gray-600 line-clamp-2 mt-auto">
+                            {project.excerpt}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="px-4 pb-4 text-center">
-                      <h3 className="text-base font-semibold text-[#0A3D62]">
-                        {project.name}
-                      </h3>
-                    </div>
-                  </div>
+                  </Link>
                 </ScrollAnimation>
               ))}
             </div>

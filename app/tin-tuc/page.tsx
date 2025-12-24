@@ -25,6 +25,8 @@ export default function NewsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   useEffect(() => {
     fetchPosts();
@@ -34,14 +36,25 @@ export default function NewsPage() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch('/api/posts?published=true');
+      const params = new URLSearchParams({
+        published: 'true',
+        // Ẩn các bài thuộc danh mục Dự án và Tuyển dụng
+        exclude_categories: 'Dự án,Tuyển dụng',
+      });
+
+      const res = await fetch(`/api/posts?${params.toString()}`);
       const data = await res.json();
 
       if (!res.ok) {
         throw new Error(data.error || 'Không thể tải bài viết');
       }
 
-      setPosts(data.posts || []);
+      // Filter out "Tuyển dụng" and "Dự án" categories (lớp bảo hiểm phía client)
+      const filteredPosts = (data.posts || []).filter(
+        (post: Post) => post.category !== 'Tuyển dụng' && post.category !== 'Dự án'
+      );
+
+      setPosts(filteredPosts);
     } catch (err) {
       console.error('Error fetching posts:', err);
       setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải bài viết');
@@ -63,12 +76,25 @@ export default function NewsPage() {
     }
   };
 
+  // Strip HTML tags from text
+  const stripHtml = (html: string) => {
+    if (!html) return '';
+    // Remove HTML tags using regex (works in both client and server)
+    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+  };
+
   const getDefaultImage = () => '/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png';
 
-  // Featured post (first post)
+  // Pagination calculations
+  const totalPages = Math.ceil(posts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedPosts = posts.slice(startIndex, endIndex);
+
+  // Featured post (first post from all posts, not paginated)
   const featuredPost = posts[0];
   const otherPosts = posts.slice(1, 3);
-  const gridPosts = posts;
+  const gridPosts = paginatedPosts;
 
   if (loading) {
     return (
@@ -138,7 +164,7 @@ export default function NewsPage() {
                         {featuredPost.title}
                       </h2>
                       <p className="text-gray-600 mb-6">
-                        {featuredPost.excerpt || featuredPost.content.substring(0, 150) + '...'}
+                        {stripHtml(featuredPost.excerpt || featuredPost.content).substring(0, 150) + '...'}
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-500 text-sm">
@@ -192,7 +218,7 @@ export default function NewsPage() {
                               {post.title}
                             </h3>
                             <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                              {post.excerpt || post.content.substring(0, 100) + '...'}
+                              {stripHtml(post.excerpt || post.content).substring(0, 100) + '...'}
                             </p>
                             <span className="text-xs text-gray-500">
                               {formatDate(post.created_at)}
@@ -245,7 +271,7 @@ export default function NewsPage() {
                       {post.title}
                     </h3>
                     <p className="text-gray-600 mb-4 line-clamp-3">
-                      {post.excerpt || post.content.substring(0, 150) + '...'}
+                      {stripHtml(post.excerpt || post.content).substring(0, 150) + '...'}
                     </p>
                     <button className="text-[#0A3D62] font-semibold hover:text-[#082A47] inline-flex items-center text-sm">
                       {t.news.readMore}
@@ -268,6 +294,63 @@ export default function NewsPage() {
               </ScrollAnimation>
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-12 flex justify-center items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Trước
+              </button>
+              
+              <div className="flex gap-2">
+                {[...Array(totalPages)].map((_, index) => {
+                  const page = index + 1;
+                  // Show first page, last page, current page, and pages around current
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                          currentPage === page
+                            ? 'bg-[#0A3D62] text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (
+                    page === currentPage - 2 ||
+                    page === currentPage + 2
+                  ) {
+                    return (
+                      <span key={page} className="px-2 text-gray-500">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Sau
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </div>

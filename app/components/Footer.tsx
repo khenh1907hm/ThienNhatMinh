@@ -53,6 +53,9 @@ const Footer = () => {
       const result = await response.json();
 
       if (response.ok) {
+        console.log('✅ Form submitted successfully');
+        console.log('📧 Email ID:', result.emailId);
+        console.log('📧 Email sent to:', result.recipient);
         setSubmitStatus({
           type: 'success',
           message: result.message || t.footer.thankYouMessage,
@@ -60,6 +63,7 @@ const Footer = () => {
         // Reset form
         setFormData({ name: '', phone: '', email: '', content: '', honeypot: '' });
       } else {
+        console.error('❌ Form submission error:', result.error);
         setSubmitStatus({
           type: 'error',
           message: result.error || 'Có lỗi xảy ra. Vui lòng thử lại.',
@@ -118,14 +122,20 @@ const Footer = () => {
                 </div>
                 <div className="pt-4">
                   <div className="inline-flex items-center">
-                    <Image
-                      src="/images/logo xác thực.png"
-                      alt="Logo xác thực - Đã thông báo Bộ Công Thương"
-                      width={200}
-                      height={80}
-                      className="object-contain"
-                      unoptimized
-                    />
+                    <Link 
+                      href="http://online.gov.vn/Home/WebDetails/84598?AspxAutoDetectCookieSupport=1" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        src="/images/logo xác thực.png"
+                        alt="Logo xác thực - Đã thông báo Bộ Công Thương"
+                        width={200}
+                        height={80}
+                        className="object-contain"
+                        unoptimized
+                      />
+                    </Link>
                   </div>
                 </div>
               </div>

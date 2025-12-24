@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import RichTextEditor from '../components/RichTextEditor';
 
 interface Post {
@@ -20,6 +21,15 @@ type Mode = 'create' | 'edit' | null;
 
 export default function AdminDashboardPage() {
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Menu items configuration
+  const menuItems = [
+    { path: '/admin', icon: '🏠', title: 'Quản lý bài viết', label: 'Quản lý bài viết' },
+    { path: '/admin/projects', icon: '📁', title: 'Quản lý Dự án', label: 'Quản lý Dự án' },
+    { path: '/admin/recruitment', icon: '👥', title: 'Quản lý Tuyển dụng', label: 'Quản lý Tuyển dụng' },
+    { path: '/admin/cv-submissions', icon: '📄', title: 'Quản lý CV', label: 'Quản lý CV' },
+  ];
 
   // Posts state
   const [posts, setPosts] = useState<Post[]>([]);
@@ -39,6 +49,7 @@ export default function AdminDashboardPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
   const resetForm = () => {
     setTitle('');
@@ -50,6 +61,7 @@ export default function AdminDashboardPage() {
     setPublished(false);
     setEditingPost(null);
     setFormError(null);
+    setFormSuccess(null);
   };
 
   const openCreate = () => {
@@ -80,8 +92,13 @@ export default function AdminDashboardPage() {
       console.log('🔄 Fetching posts...');
       setLoadingPosts(true);
       setPostsError(null);
-      
-      const res = await fetch('/api/posts');
+
+      const params = new URLSearchParams({
+        // Ẩn bài viết thuộc danh mục Dự án và Tuyển dụng khỏi danh sách chung
+        exclude_categories: 'Dự án,Tuyển dụng',
+      });
+
+      const res = await fetch(`/api/posts?${params.toString()}`);
       const data = await res.json();
       
       console.log('📥 API Response:', {
@@ -99,7 +116,14 @@ export default function AdminDashboardPage() {
       }
 
       console.log(`✅ Loaded ${data.posts?.length || 0} posts`);
-      setPosts(data.posts || []);
+
+      // Lọc lại phía client như lớp bảo hiểm
+      const filteredPosts = (data.posts || []).filter(
+        (post: Post) => post.category !== 'Dự án' && post.category !== 'Tuyển dụng'
+      );
+
+      console.log(`✅ Filtered to ${filteredPosts.length} posts (excluding Dự án and Tuyển dụng)`);
+      setPosts(filteredPosts);
     } catch (err) {
       console.error('❌ Error fetching posts:', err);
       const message =
@@ -124,6 +148,7 @@ export default function AdminDashboardPage() {
     try {
       setSaving(true);
       setFormError(null);
+      setFormSuccess(null);
 
       // Upload image file (if selected) via API
       let finalImageUrl = imageUrl;
@@ -201,7 +226,19 @@ export default function AdminDashboardPage() {
         throw new Error(data.error || 'Không thể lưu bài viết');
       }
 
-      closeForm();
+      // Cập nhật lại state theo post trả về, nhưng không đóng form
+      if (data.post) {
+        const updated: Post = data.post;
+        setEditingPost(updated);
+        setTitle(updated.title || '');
+        setCategory(updated.category || '');
+        setExcerpt(updated.excerpt || '');
+        setImageUrl(updated.image || '');
+        setContent(updated.content || '');
+        setPublished(!!updated.published);
+      }
+
+      setFormSuccess('Lưu bài viết thành công.');
       await fetchPosts();
     } catch (err) {
       const message =
@@ -264,39 +301,66 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-[#F6E8DC] flex">
       {/* Sidebar */}
-      <aside className="w-[72px] md:w-20 bg-[#3A1308] text-white flex flex-col items-center py-6 space-y-6">
-        <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center font-bold text-lg">
-          A
+      <div className="w-[72px] md:w-20 bg-[#3A1308] text-white flex flex-col items-center py-6 space-y-6 relative z-50">
+        <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden">
+          <Image
+            src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
+            alt="Logo"
+            width={40}
+            height={40}
+            className="object-contain"
+          />
         </div>
-        <nav className="flex-1 flex flex-col items-center space-y-4 mt-4 text-xs">
-          <button className="w-9 h-9 rounded-2xl bg-white text-[#3A1308] flex items-center justify-center shadow-sm">
-            ◼
-          </button>
-          <button className="w-9 h-9 rounded-2xl bg-white/10 flex items-center justify-center">
-            ≋
-          </button>
-          <button className="w-9 h-9 rounded-2xl bg-white/10 flex items-center justify-center">
-            ₿
-          </button>
-          <button className="w-9 h-9 rounded-2xl bg-white/10 flex items-center justify-center">
-            ⚙
-          </button>
+        <nav className="flex-1 flex flex-col items-center space-y-4 mt-4 text-xs w-full">
+          {menuItems.map((item) => {
+            const isActive =
+              pathname === item.path ||
+              (item.path !== '/admin' && pathname.startsWith(item.path));
+            return (
+              <div key={item.path} className="relative group/item">
+                <button
+                  onClick={() => router.push(item.path)}
+                  className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-colors ${
+                    isActive
+                      ? 'bg-white text-[#3A1308] shadow-sm'
+                      : 'bg-white/10 hover:bg-white/20'
+                  }`}
+                  title={item.title}
+                >
+                  <span className="text-lg">{item.icon}</span>
+                </button>
+                <span className="absolute left-full ml-2 px-2 py-1 bg-[#3A1308] text-white text-xs font-medium whitespace-nowrap rounded opacity-0 group-hover/item:opacity-100 pointer-events-none transition-opacity duration-200 z-50 shadow-lg">
+                  {item.label}
+                </span>
+              </div>
+            );
+          })}
         </nav>
-        <button
-          className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-xs hover:bg-white/20 transition-colors"
-          onClick={() => router.push('/')}
-          title="Về trang chủ"
-        >
-          ⬅
-        </button>
-        <button
-          className="w-9 h-9 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center text-xs text-white transition-colors"
-          onClick={handleLogout}
-          title="Đăng xuất"
-        >
-          🚪
-        </button>
-      </aside>
+        <div className="relative group/item">
+          <button
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            onClick={() => router.push('/')}
+            title="Về trang chủ"
+          >
+            <span className="text-xs">⬅</span>
+          </button>
+          <span className="absolute left-full ml-2 px-2 py-1 bg-[#3A1308] text-white text-xs font-medium whitespace-nowrap rounded opacity-0 group-hover/item:opacity-100 pointer-events-none transition-opacity duration-200 z-50 shadow-lg">
+            Về trang chủ
+          </span>
+        </div>
+        <div className="relative group/item">
+          <button
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-red-500/20 hover:bg-red-500/30 text-white transition-colors"
+            onClick={handleLogout}
+            title="Đăng xuất"
+          >
+            <span className="text-xs">🚪</span>
+          </button>
+          <span className="absolute left-full ml-2 px-2 py-1 bg-[#3A1308] text-white text-xs font-medium whitespace-nowrap rounded opacity-0 group-hover/item:opacity-100 pointer-events-none transition-opacity duration-200 z-50 shadow-lg">
+            Đăng xuất
+          </span>
+        </div>
+      </div>
 
       {/* Main content */}
       <main className="flex-1 px-4 md:px-8 py-6 space-y-6">
@@ -428,6 +492,12 @@ export default function AdminDashboardPage() {
                   ← Quay lại danh sách
                 </button>
               </div>
+
+              {formSuccess && (
+                <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-2 text-sm text-green-700">
+                  {formSuccess}
+                </div>
+              )}
 
               {formError && (
                 <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-2 text-sm text-red-700">

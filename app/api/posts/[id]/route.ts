@@ -93,7 +93,7 @@ export async function PUT(
     
     const body = await request.json();
     console.log('Request body:', body);
-    const { title, content, excerpt, image, category, published } = body;
+    const { title, content, excerpt, image, category, published, project_type } = body;
 
     // Build update object
     const updateData: any = {
@@ -112,8 +112,13 @@ export async function PUT(
     }
     if (content !== undefined) updateData.content = content;
     if (excerpt !== undefined) updateData.excerpt = excerpt;
-    if (image !== undefined) updateData.image = image;
+    // Set default logo if image is empty/null
+    if (image !== undefined) {
+      const defaultLogoUrl = '/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png';
+      updateData.image = image || defaultLogoUrl;
+    }
     if (category !== undefined) updateData.category = category;
+    if (project_type !== undefined) updateData.project_type = project_type || null;
     if (published !== undefined) {
       updateData.published = published === true || published === 'true';
     }

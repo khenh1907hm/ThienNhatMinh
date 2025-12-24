@@ -1,63 +1,51 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '../i18n/context';
 import ScrollAnimation from '../components/ScrollAnimation';
 
+interface Position {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string;
+  image: string | null;
+  created_at: string;
+}
+
 export default function RecruitmentPage() {
   const { t } = useI18n();
   const router = useRouter();
+  const [positions, setPositions] = useState<Position[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const positions = [
-    {
-      title: t.recruitment.electricalEngineer,
-      department: t.recruitment.technical,
-      location: t.recruitment.hanoi,
-      type: t.recruitment.fullTime,
-      description: 'Tìm kiếm kỹ sư điện có kinh nghiệm trong thiết kế và thi công hệ thống điện.',
-      requirements: [
-        'Tốt nghiệp đại học chuyên ngành Điện',
-        'Kinh nghiệm 2-3 năm',
-        'Có khả năng làm việc độc lập và nhóm',
-      ],
-    },
-    {
-      title: t.recruitment.transformerEngineer,
-      department: t.recruitment.technical,
-      location: t.recruitment.hoChiMinh,
-      type: t.recruitment.fullTime,
-      description: 'Chuyên viên thiết kế và giám sát thi công trạm biến áp.',
-      requirements: [
-        'Tốt nghiệp đại học chuyên ngành Điện',
-        'Kinh nghiệm 3-5 năm',
-        'Có chứng chỉ hành nghề',
-      ],
-    },
-    {
-      title: t.recruitment.salesStaff,
-      department: t.recruitment.business,
-      location: t.recruitment.hanoi,
-      type: t.recruitment.fullTime,
-      description: 'Tìm kiếm nhân viên bán hàng có kinh nghiệm trong lĩnh vực điện năng lượng.',
-      requirements: [
-        'Tốt nghiệp đại học',
-        'Kinh nghiệm bán hàng B2B',
-        'Kỹ năng giao tiếp tốt',
-      ],
-    },
-    {
-      title: t.recruitment.renewableEnergyEngineer,
-      department: t.recruitment.technical,
-      location: t.recruitment.daNang,
-      type: t.recruitment.fullTime,
-      description: 'Chuyên viên thiết kế và lắp đặt hệ thống năng lượng mặt trời.',
-      requirements: [
-        'Tốt nghiệp đại học chuyên ngành Điện/Năng lượng',
-        'Kinh nghiệm 2-3 năm',
-        'Hiểu biết về hệ thống điện mặt trời',
-      ],
-    },
-  ];
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch(`/api/posts?category=${encodeURIComponent('Tuyển dụng')}&published=true`);
+        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(data.error || 'Không thể tải danh sách tuyển dụng');
+        }
+
+        setPositions(data.posts || []);
+      } catch (err) {
+        console.error('Error fetching recruitment:', err);
+        setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải tuyển dụng');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPositions();
+  }, []);
+
 
   return (
     <div className="min-h-screen">
@@ -109,98 +97,29 @@ export default function RecruitmentPage() {
               {t.recruitment.openPositions}
             </h2>
           </ScrollAnimation>
-          <div className="space-y-6">
-            {positions.map((position, index) => (
-              <ScrollAnimation key={index} direction="up" delay={index * 100}>
-                <div className="bg-white rounded-xl border border-gray-200 p-8 hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-6">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-4 mb-3">
-                        <h3 className="text-2xl font-semibold text-[#0A3D62]">
-                          {position.title}
-                        </h3>
-                        <span className="px-3 py-1 bg-[#E1E2E5] text-[#0A3D62] text-sm font-semibold rounded-full">
-                          {position.type}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-4 text-gray-600 mb-4">
-                        <span className="flex items-center">
-                          <svg
-                            className="w-5 h-5 mr-2"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                            />
-                          </svg>
-                          {position.department}
-                        </span>
-                        <span className="flex items-center">
-                          <svg
-                            className="w-5 h-5 mr-2"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                          </svg>
-                          {position.location}
-                        </span>
-                      </div>
-                      <p className="text-gray-600 mb-4">{position.description}</p>
-                      <div className="mb-6">
-                        <h4 className="font-semibold text-[#0A3D62] mb-2">{t.recruitment.requirements}</h4>
-                        <ul className="space-y-1">
-                          {position.requirements.map((req, idx) => (
-                            <li key={idx} className="flex items-start text-gray-600">
-                              <svg
-                                className="w-5 h-5 text-[#FFC107] mr-2 mt-0.5 flex-shrink-0"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                              <span>{req}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="md:ml-8 mt-4 md:mt-0">
-                      <button 
-                        onClick={() => router.push('/lien-he?subject=recruitment')}
-                        className="w-full md:w-auto px-8 py-3 bg-[#0A3D62] text-white rounded-lg font-semibold hover:bg-[#082A47] transform hover:scale-105 transition-all duration-200"
-                      >
-                        {t.recruitment.applyNow}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </ScrollAnimation>
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-20">
+              <p className="text-gray-500 text-lg">Đang tải danh sách tuyển dụng...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-red-500 text-lg">{error}</p>
+            </div>
+          ) : positions.length > 0 ? (
+            <div className="space-y-6">
+              {positions.map((position, index) => (
+                <PositionCard
+                  key={position.id}
+                  position={position}
+                  index={index}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <p className="text-gray-500 text-lg">Hiện tại chưa có vị trí tuyển dụng nào.</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -252,6 +171,56 @@ export default function RecruitmentPage() {
           </div>
         </div>
       </section>
+
     </div>
+  );
+}
+
+// Position Card Component - chỉ hiển thị thông tin chung
+function PositionCard({ 
+  position, 
+  index
+}: { 
+  position: Position; 
+  index: number;
+}) {
+  const { t } = useI18n();
+  const router = useRouter();
+
+  return (
+    <ScrollAnimation direction="up" delay={index * 100}>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 cursor-pointer"
+           onClick={() => router.push(`/tuyen-dung/${position.slug}`)}>
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-4 mb-3">
+              <h3 className="text-2xl font-semibold text-[#0A3D62]">
+                {position.title}
+              </h3>
+              <span className="px-3 py-1 bg-[#E1E2E5] text-[#0A3D62] text-sm font-semibold rounded-full">
+                {t.recruitment.fullTime}
+              </span>
+            </div>
+            {position.excerpt && (
+              <p className="text-gray-600 mb-4 line-clamp-2">{position.excerpt}</p>
+            )}
+            <div className="flex items-center text-sm text-gray-500">
+              <span>Ngày đăng: {new Date(position.created_at).toLocaleDateString('vi-VN')}</span>
+            </div>
+          </div>
+          <div className="md:ml-8 mt-2 md:mt-0 flex-shrink-0">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/tuyen-dung/${position.slug}`);
+              }}
+              className="w-full md:w-auto px-8 py-3 bg-[#0A3D62] text-white rounded-lg font-semibold hover:bg-[#082A47] transform hover:scale-105 transition-all duration-200"
+            >
+              Xem chi tiết →
+            </button>
+          </div>
+        </div>
+      </div>
+    </ScrollAnimation>
   );
 }

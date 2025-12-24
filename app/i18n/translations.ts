@@ -18,7 +18,7 @@ export const translations = {
       heroTitle: 'Giải pháp',
       heroTitleHighlight: 'Điện Năng Lượng',
       heroSubtitle: 'Chuyên nghiệp',
-      heroDescription: 'Chuyên cung cấp các giải pháp điện năng lượng, hệ thống trạm biến áp và các dịch vụ kỹ thuật chất lượng cao',
+      heroDescription: 'Chuyên cung cấp các giải pháp về hệ thống điện, hệ thống điều khiển và các dịch vụ kỹ thuật chất lượng cao',
       heroTypingPrefix: 'Chuyên về',
       heroTypingTexts: [
         'Điện Năng Lượng',
@@ -317,7 +317,7 @@ export const translations = {
       heroTitle: 'Professional',
       heroTitleHighlight: 'Energy Solutions',
       heroSubtitle: '',
-      heroDescription: 'Specializing in energy solutions, transformer station systems and high-quality technical services',
+      heroDescription: 'Specializing in providing solutions for electrical systems, control systems and high-quality technical services',
       heroTypingPrefix: 'Specializing in',
       heroTypingTexts: [
         'Energy Solutions',
@@ -616,7 +616,7 @@ export const translations = {
       heroTitle: 'プロフェッショナル',
       heroTitleHighlight: 'エネルギーソリューション',
       heroSubtitle: '',
-      heroDescription: 'エネルギーソリューション、変圧器ステーションシステム、高品質の技術サービスを専門としています',
+      heroDescription: '電気システム、制御システム、高品質の技術サービスに関するソリューションの提供を専門としています',
       heroTypingPrefix: '専門分野',
       heroTypingTexts: [
         'エネルギーソリューション',

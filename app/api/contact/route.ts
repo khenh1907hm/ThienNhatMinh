@@ -215,10 +215,15 @@ Thời gian: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh'
     }
 
     console.log('✅ Email sent successfully:', data);
+    console.log('📧 Email ID:', data?.id);
+    console.log('📧 Recipient:', recipientEmail);
+    
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.' 
+        message: 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.',
+        emailId: data?.id,
+        recipient: recipientEmail
       },
       { status: 200 }
     );

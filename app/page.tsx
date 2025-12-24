@@ -127,11 +127,22 @@ export default function Home() {
   const fetchPosts = async () => {
     try {
       setLoadingPosts(true);
-      const res = await fetch('/api/posts?published=true&limit=3');
+      const params = new URLSearchParams({
+        published: 'true',
+        limit: '3',
+        // Ẩn các bài thuộc danh mục Dự án và Tuyển dụng
+        exclude_categories: 'Dự án,Tuyển dụng',
+      });
+
+      const res = await fetch(`/api/posts?${params.toString()}`);
       const data = await res.json();
 
       if (res.ok && data.posts) {
-        setPosts(data.posts);
+        // Lọc lại phía client như một lớp bảo hiểm
+        const filtered = (data.posts as Post[]).filter(
+          (post) => post.category !== 'Dự án' && post.category !== 'Tuyển dụng'
+        );
+        setPosts(filtered);
       }
     } catch (err) {
       console.error('Error fetching posts:', err);
