@@ -131,7 +131,6 @@ export async function POST(request: NextRequest) {
 
     if (uploadError) {
       console.error('❌ CV upload error:', uploadError);
-      console.error('Error code:', uploadError.statusCode);
       console.error('Error message:', uploadError.message);
       
       // Provide helpful error messages
