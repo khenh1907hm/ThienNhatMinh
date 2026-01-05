@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import RichTextEditor from '../../components/RichTextEditor';
@@ -43,16 +43,17 @@ export default function AdminProjectsPage() {
   const [excerpt, setExcerpt] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageUrlInput, setImageUrlInput] = useState('');
+  const [loadingImage, setLoadingImage] = useState(false);
   const [content, setContent] = useState('');
   const [published, setPublished] = useState(false);
-  const [projectType, setProjectType] = useState<string>('');
+  const [selectedProjectTypes, setSelectedProjectTypes] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Các loại dự án
+  // Các loại dự án (bỏ option rỗng)
   const projectTypes = [
-    { value: '', label: '-- Chọn loại dự án --' },
     { value: 'tieu-bieu', label: 'Dự án tiêu biểu' },
     { value: 'dang-thuc-hien', label: 'Dự án đang thực hiện' },
     { value: 'da-thuc-hien', label: 'Dự án đã thực hiện' },
@@ -61,17 +62,25 @@ export default function AdminProjectsPage() {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Filter by project type
+  const [filterProjectType, setFilterProjectType] = useState<string>('all');
 
   const resetForm = () => {
     setTitle('');
     setExcerpt('');
     setImageUrl('');
     setImageFile(null);
+    setImageUrlInput('');
     setContent('');
     setPublished(false);
-    setProjectType('');
+    setSelectedProjectTypes([]);
     setEditingPost(null);
     setFormError(null);
+    setLoadingImage(false);
   };
 
   const openCreate = () => {
@@ -85,9 +94,13 @@ export default function AdminProjectsPage() {
     setExcerpt(post.excerpt || '');
     setImageUrl(post.image || '');
     setImageFile(null);
+    setImageUrlInput('');
     setContent(post.content || '');
     setPublished(!!post.published);
-    setProjectType(post.project_type || '');
+    // Parse project_type từ string (có thể là single value hoặc comma-separated)
+    const projectTypeStr = post.project_type || '';
+    const types = projectTypeStr ? projectTypeStr.split(',').map(t => t.trim()).filter(Boolean) : [];
+    setSelectedProjectTypes(types);
     setFormError(null);
     setFormMode('edit');
   };
@@ -121,11 +134,44 @@ export default function AdminProjectsPage() {
     }
   };
 
+  // Filter posts based on search query and project type
+  const filteredPosts = useMemo(() => {
+    let filtered = posts;
+    
+    // Filter by project type first
+    if (filterProjectType !== 'all') {
+      filtered = filtered.filter((post) => {
+        const projectTypeStr = post.project_type || '';
+        const postTypes = projectTypeStr ? projectTypeStr.split(',').map(t => t.trim()) : [];
+        return postTypes.includes(filterProjectType);
+      });
+    }
+    
+    // Then filter by search query
+    const trimmedQuery = searchQuery.trim();
+    if (!trimmedQuery) return filtered;
+    
+    const query = trimmedQuery.toLowerCase();
+    return filtered.filter((post) => {
+      const titleMatch = post.title?.toLowerCase().includes(query) ?? false;
+      const excerptMatch = post.excerpt?.toLowerCase().includes(query) ?? false;
+      // Check all project types in the post
+      const projectTypeStr = post.project_type || '';
+      const postTypes = projectTypeStr ? projectTypeStr.split(',').map(t => t.trim()) : [];
+      const projectTypeMatch = postTypes.some(type => {
+        const typeLabel = projectTypes.find(pt => pt.value === type)?.label || '';
+        return typeLabel.toLowerCase().includes(query);
+      });
+      
+      return titleMatch || excerptMatch || projectTypeMatch;
+    });
+  }, [posts, searchQuery, filterProjectType, projectTypes]);
+
   // Pagination calculations
-  const totalPages = Math.ceil(posts.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentPosts = posts.slice(startIndex, endIndex);
+  const currentPosts = filteredPosts.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -140,10 +186,10 @@ export default function AdminProjectsPage() {
     fetchPosts();
   }, []);
 
-  // Reset to page 1 when posts change
+  // Reset to page 1 when posts, search query, or filter change
   useEffect(() => {
     setCurrentPage(1);
-  }, [posts.length]);
+  }, [posts.length, searchQuery, filterProjectType]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -174,13 +220,18 @@ export default function AdminProjectsPage() {
         finalImageUrl = uploadData.url;
       }
 
+      // Join selected project types with comma
+      const projectTypeValue = selectedProjectTypes.length > 0 
+        ? selectedProjectTypes.join(',') 
+        : null;
+
       const payload = {
         title: title.trim(),
         content: content.trim(),
         excerpt: excerpt.trim() || null,
         image: finalImageUrl || null,
         category: CATEGORY, // Set cứng category
-        project_type: projectType || null,
+        project_type: projectTypeValue,
         published,
       };
 
@@ -226,6 +277,45 @@ export default function AdminProjectsPage() {
     } catch (err) {
       console.error('Logout error:', err);
       alert('Có lỗi xảy ra khi đăng xuất');
+    }
+  };
+
+  const handleDownloadImageFromUrl = async () => {
+    if (!imageUrlInput.trim()) {
+      setFormError('Vui lòng nhập URL ảnh');
+      return;
+    }
+
+    try {
+      setLoadingImage(true);
+      setFormError(null);
+
+      const formData = new FormData();
+      formData.append('imageUrl', imageUrlInput.trim());
+      formData.append('folder', 'posts');
+
+      const res = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Không thể tải ảnh từ URL');
+      }
+
+      setImageUrl(data.url);
+      setImageUrlInput('');
+      setImageFile(null); // Clear file if URL is used
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Có lỗi xảy ra khi tải ảnh từ URL';
+      setFormError(message);
+    } finally {
+      setLoadingImage(false);
     }
   };
 
@@ -328,12 +418,43 @@ export default function AdminProjectsPage() {
             </p>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="flex-1 md:flex-none md:w-72">
+            <div className="flex-1 md:flex-none md:w-48">
+              <select
+                value={filterProjectType}
+                onChange={(e) => {
+                  setFilterProjectType(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full rounded-full bg-white/70 px-4 py-2 text-sm text-[#3A1308] focus:outline-none focus:ring-2 focus:ring-[#B44938] border border-transparent hover:border-gray-300 cursor-pointer"
+              >
+                <option value="all">Tất cả loại dự án</option>
+                {projectTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex-1 md:flex-none md:w-72 relative">
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1); // Reset to first page when searching
+                }}
                 placeholder="Tìm kiếm dự án..."
-                className="w-full rounded-full bg-white/70 px-4 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#B44938]"
+                className="w-full rounded-full bg-white/70 px-4 py-2 pr-10 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#B44938]"
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  title="Xóa tìm kiếm"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -365,9 +486,21 @@ export default function AdminProjectsPage() {
               <div className="py-4 px-4 text-sm text-red-700">
                 {postsError}
               </div>
-            ) : posts.length === 0 ? (
+            ) : filteredPosts.length === 0 ? (
               <div className="py-6 text-center text-sm text-[#8A5B46]">
-                Chưa có dự án nào. Bấm &quot;Thêm dự án&quot; để tạo mới.
+                {searchQuery ? (
+                  <>
+                    Không tìm thấy dự án nào phù hợp với &quot;{searchQuery}&quot;.
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="ml-2 text-[#B44938] hover:underline"
+                    >
+                      Xóa bộ lọc
+                    </button>
+                  </>
+                ) : (
+                  'Chưa có dự án nào. Bấm "Thêm dự án" để tạo mới.'
+                )}
               </div>
             ) : (
               <>
@@ -394,9 +527,20 @@ export default function AdminProjectsPage() {
                         {post.title}
                       </p>
                       {post.project_type && (
-                        <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 mb-1">
-                          {projectTypes.find(pt => pt.value === post.project_type)?.label || post.project_type}
-                        </span>
+                        <div className="flex flex-wrap gap-1 mb-1">
+                          {post.project_type.split(',').map((type, idx) => {
+                            const trimmedType = type.trim();
+                            const typeLabel = projectTypes.find(pt => pt.value === trimmedType)?.label || trimmedType;
+                            return (
+                              <span 
+                                key={idx}
+                                className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700"
+                              >
+                                {typeLabel}
+                              </span>
+                            );
+                          })}
+                        </div>
                       )}
                       <p className="text-sm text-[#8A5B46] truncate mb-2">
                         {post.excerpt || '(Không có mô tả ngắn)'}
@@ -427,7 +571,14 @@ export default function AdminProjectsPage() {
                 {totalPages > 1 && (
                   <div className="px-4 py-3 border-t border-white/60 flex items-center justify-between">
                     <div className="text-sm text-[#8A5B46]">
-                      Hiển thị {startIndex + 1}-{Math.min(endIndex, posts.length)} trong tổng số {posts.length} dự án
+                      {searchQuery ? (
+                        <>
+                          Hiển thị {startIndex + 1}-{Math.min(endIndex, filteredPosts.length)} trong tổng số {filteredPosts.length} kết quả
+                          <span className="text-[#8A5B46]/60"> (từ {posts.length} dự án)</span>
+                        </>
+                      ) : (
+                        `Hiển thị ${startIndex + 1}-${Math.min(endIndex, filteredPosts.length)} trong tổng số ${filteredPosts.length} dự án`
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -534,23 +685,77 @@ export default function AdminProjectsPage() {
                     required
                   />
                 </div>
-                <div className="flex gap-3">
+                <div className="space-y-3">
                   <div className="w-full flex flex-col gap-1">
+                    <label className="text-sm font-semibold text-[#3A1308] mb-1">
+                      Upload ảnh từ máy tính
+                    </label>
                     <input
                       type="file"
                       accept="image/*"
                       onChange={(e) => {
                         const file = e.target.files?.[0] || null;
                         setImageFile(file);
+                        if (file) {
+                          setImageUrlInput(''); // Clear URL input when file is selected
+                        }
                       }}
                       className="w-full text-sm text-[#3A1308] file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:bg-[#F6E8DC] file:text-[#3A1308] hover:file:bg-[#F0DCCF] cursor-pointer"
                     />
-                    {imageUrl && !imageFile && (
-                      <span className="text-xs text-[#8A5B46] truncate">
-                        Ảnh hiện tại: {imageUrl}
-                      </span>
-                    )}
                   </div>
+                  
+                  <div className="relative">
+                    <label className="text-sm font-semibold text-[#3A1308] mb-1 block">
+                      Hoặc tải ảnh từ URL
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={imageUrlInput}
+                        onChange={(e) => {
+                          setImageUrlInput(e.target.value);
+                          if (e.target.value) {
+                            setImageFile(null); // Clear file when URL is entered
+                          }
+                        }}
+                        placeholder="https://example.com/image.jpg"
+                        className="flex-1 px-4 py-2.5 text-base rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#B44938] focus:border-transparent"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleDownloadImageFromUrl();
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleDownloadImageFromUrl}
+                        disabled={loadingImage || !imageUrlInput.trim()}
+                        className="px-4 py-2.5 rounded-lg bg-[#B44938] text-white font-semibold hover:bg-[#9A3E2E] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      >
+                        {loadingImage ? 'Đang tải...' : 'Tải về'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {imageUrl && (
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-xs text-green-700 font-semibold mb-1">Ảnh đã được tải:</p>
+                      <p className="text-xs text-green-600 truncate">{imageUrl}</p>
+                      {imageUrl && (
+                        <div className="mt-2">
+                          <img 
+                            src={imageUrl} 
+                            alt="Preview" 
+                            className="max-w-full h-32 object-cover rounded border border-green-300"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <input
@@ -563,19 +768,51 @@ export default function AdminProjectsPage() {
                 </div>
                 <div>
                   <label className="block text-base font-semibold text-[#3A1308] mb-2">
-                    Loại dự án
+                    Loại dự án (có thể chọn nhiều)
                   </label>
-                  <select
-                    value={projectType}
-                    onChange={(e) => setProjectType(e.target.value)}
-                    className="w-full px-4 py-2.5 text-base rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#B44938] focus:border-transparent bg-white"
-                  >
-                    {projectTypes.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {projectTypes.map((type) => {
+                      const isSelected = selectedProjectTypes.includes(type.value);
+                      return (
+                        <div
+                          key={type.value}
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedProjectTypes(prev => prev.filter(t => t !== type.value));
+                            } else {
+                              setSelectedProjectTypes(prev => [...prev, type.value]);
+                            }
+                          }}
+                          className={`
+                            relative cursor-pointer rounded-lg border-2 p-4 transition-all duration-200
+                            ${isSelected 
+                              ? 'bg-[#B44938] border-[#B44938] text-white' 
+                              : 'bg-white border-gray-300 text-[#3A1308] hover:border-[#B44938] hover:bg-[#F6E8DC]'
+                            }
+                          `}
+                        >
+                          <div className="font-semibold text-base">{type.label}</div>
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                              <svg 
+                                className="w-4 h-4 text-[#B44938]" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                              >
+                                <path 
+                                  strokeLinecap="round" 
+                                  strokeLinejoin="round" 
+                                  strokeWidth={3} 
+                                  d="M5 13l4 4L19 7" 
+                                />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-base font-semibold text-[#3A1308] mb-2">
