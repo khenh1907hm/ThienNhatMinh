@@ -37,86 +37,48 @@ export default function Home() {
 
   // Projects Data
   const [activeProjectTab, setActiveProjectTab] = useState('featured');
+  const [projects, setProjects] = useState<Post[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
 
-  const featuredProjects = [
-    { name: 'MEG MILK SNOW BRAND VN' },
-    { name: 'Mabuchi Biên Hòa Solar 1MWp phase 1' },
-    { name: 'FT Pharma – GMP-EU Long Hau Pharmaceutical Factory' },
-    { name: 'KINGSPAN VIỆT NAM SOLAR 1MW' },
-    { name: 'ACCREDO ASIA SOLAR – 1MW' },
-    { name: 'SHOWA SANGYO INTERNATIONAL VIỆT NAM' },
-    { name: 'NHÀ MÁY MỚI ACECOOK VĨNH LONG' },
-    { name: 'ACCREDO ASIA SOLAR – 1MW (PHASE 3)' },
-    { name: 'MURATA MANUFACTURING VN – HCM S&B' },
-    { name: 'OTSUKA THANG NUTRITION CO., LTD – POCARI PHASE 2' },
-    { name: 'Lotte My Phuoc Factory Renovation' },
-    { name: 'Yuwa Vietnam Renovation Project' },
-    { name: 'Mabuchi Danang Solar 1MWp phase 2' },
-    { name: 'Murata Manufacturing Vietnam Co., Ltd' },
-    { name: 'NHÀ MÁY YAZAKI CỦ CHI' },
-    { name: 'KANEKA VIỆT NAM PHASE 3' },
-    { name: 'NHÀ MÁY NIPRO VIỆT NAM' },
-    { name: 'METRO STATION' },
-    { name: 'Suzuki' },
-    { name: 'Siêu thị Aeon Bình Dương' },
-    { name: 'Siêu thị Aeon Bình Tân' },
-    { name: 'Nanoco Building' },
-    { name: 'Estella Height' },
-    { name: 'Sapporo Việt Nam' },
-    { name: 'Nissin Food' },
-    { name: 'Rohto Việt Nam' },
-    { name: 'Otsuka Techno' },
-    { name: 'Wonderful Sài Gòn' },
-    { name: 'Sài gòn Stec' },
-  ];
+  // Fetch projects from database
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-  const inProgressProjects = [
-    { name: 'TAKIGAWA CORPORATION VIETNAM NEW FACTORY' },
-    { name: 'MEG MILK SNOW BRAND VN' },
-    { name: 'OTSUKA THANG NUTRITION CO., LTD – POCARI PHASE 2' },
-    { name: 'MURATA MANUFACTURING VN – HCM S&B' },
-    { name: 'ACCREDO ASIA SOLAR – 1MW (PHASE 3)' },
-    { name: 'NHÀ MÁY MỚI ACECOOK VĨNH LONG' },
-    { name: 'SHOWA SANGYO INTERNATIONAL VIỆT NAM' },
-  ];
-
-  const completedProjects = [
-    { name: 'Murata Manufacturing Vietnam – Solar 438kW' },
-    { name: 'MABUCHI DANANG RENOVATION' },
-    { name: 'ACCREDO ASIA SOLAR – 1MW' },
-    { name: 'KYOKUYO VINA FOODS COMPANY LIMITED – LONG AN BRANCH' },
-    { name: 'MUFG NEW OFFICE' },
-    { name: 'PANASONIC LIFE SOLUTION VIETNAM CO., LTD – PHASE 3 FACTORY' },
-    { name: 'KINGSPAN VIỆT NAM SOLAR 1MW' },
-    { name: 'SMC VIETNAM CO., LTD – SMC NEW 3RD FACTORY – PHASE 2' },
-    { name: 'SMC VIETNAM CO., LTD – SMC NEW 1ST FACTORY – PHASE 3' },
-    { name: 'SMC VIETNAM CO., LTD – SMC NEW 2ND FACTORY – PHASE 3' },
-    { name: 'Mabuchi Biên Hòa Solar 1MWp phase 1' },
-    { name: 'FT Pharma – GMP-EU Long Hau Pharmaceutical Factory' },
-    { name: 'Lotte My Phuoc Factory Renovation' },
-    { name: 'Yuwa Vietnam Renovation Project' },
-    { name: 'Mabuchi Danang Solar 1MWp phase 2' },
-    { name: 'Murata Manufacturing Vietnam Co., Ltd' },
-    { name: 'NHÀ MÁY YAZAKI CỦ CHI' },
-    { name: 'NHÀ MÁY PLUS VIỆT NAM' },
-    { name: 'CMC Creative Space' },
-    { name: 'ELANCO VIỆT NAM' },
-    { name: 'KANEKA VIỆT NAM PHASE 3' },
-    { name: 'NHÀ MÁY NIPRO VIỆT NAM' },
-    { name: 'METRO STATION' },
-  ];
+  const fetchProjects = async () => {
+    try {
+      setLoadingProjects(true);
+      const res = await fetch(`/api/posts?category=${encodeURIComponent('Dự án')}&published=true`);
+      const data = await res.json();
+      
+      if (res.ok && data.posts) {
+        setProjects(data.posts || []);
+      }
+    } catch (err) {
+      console.error('Error fetching projects:', err);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
 
   const getProjectsByTab = () => {
-    switch (activeProjectTab) {
-      case 'featured':
-        return featuredProjects;
-      case 'inProgress':
-        return inProgressProjects;
-      case 'completed':
-        return completedProjects;
-      default:
-        return featuredProjects;
-    }
+    if (loadingProjects) return [];
+    
+    return projects.filter((project) => {
+      const projectTypeStr = project.project_type || '';
+      const projectTypes = projectTypeStr ? projectTypeStr.split(',').map(t => t.trim()) : [];
+      
+      switch (activeProjectTab) {
+        case 'featured':
+          return projectTypes.includes('tieu-bieu');
+        case 'inProgress':
+          return projectTypes.includes('dang-thuc-hien');
+        case 'completed':
+          return projectTypes.includes('da-thuc-hien');
+        default:
+          return projectTypes.includes('tieu-bieu');
+      }
+    });
   };
 
   // Fetch posts from database
@@ -351,10 +313,10 @@ export default function Home() {
           <ScrollAnimation direction="up" delay={800}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                '/images/bannner-1.jpg',
-                '/images/banner2.png',
-                '/images/banner3.png',
-                '/images/bannner-1.jpg',
+                '/images/image_feature_1.jpg',
+                '/images/image_feature_2.jpg',
+                '/images/image_feature_3.jpg',
+                '/images/image_feature_4.jpg',
               ].map((src, index) => (
                 <div
                   key={index}
@@ -398,9 +360,9 @@ export default function Home() {
             <ScrollAnimation direction="left" delay={200}>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { src: '/images/bannner-1.jpg', alt: 'Sustainable 1', className: 'rounded-xl' },
-                  { src: '/images/banner2.png', alt: 'Sustainable 2', className: 'rounded-xl' },
-                  { src: '/images/banner3.png', alt: 'Sustainable 3', className: 'rounded-xl col-span-2' },
+                  { src: '/images/hệ thống điện năng lượng mặt trời.jpg', alt: 'Hệ thống điện năng lượng mặt trời', className: 'rounded-xl' },
+                  { src: '/images/hệ thống chiếu sáng.jpg', alt: 'Hệ thống chiếu sáng LED tiết kiệm năng lượng', className: 'rounded-xl' },
+                  { src: '/images/Hệ thống điện.jpg', alt: 'Hệ thống điện hiệu quả năng lượng', className: 'rounded-xl col-span-2' },
                 ].map((img, index) => (
                   <div key={index} className="relative h-48 rounded-xl overflow-hidden shadow-lg">
         <Image
@@ -652,26 +614,32 @@ export default function Home() {
           </ScrollAnimation>
 
           {/* Projects Grid */}
-          {getProjectsByTab().length > 0 ? (
+          {loadingProjects ? (
+            <div className="text-center py-20 mb-12">
+              <p className="text-gray-500 text-lg">Đang tải danh sách dự án...</p>
+            </div>
+          ) : getProjectsByTab().length > 0 ? (
             <>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
                 {getProjectsByTab().slice(0, 8).map((project, index) => (
-                  <ScrollAnimation key={index} direction="up" delay={index * 50}>
-                    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-[#0A3D62] flex flex-col">
-                      <div className="relative w-full h-32 mb-4">
-                        <Image
-                          src="/images/bannner-1.jpg"
-                          alt={project.name}
-                          fill
-                          className="object-cover"
-                        />
+                  <ScrollAnimation key={project.id || index} direction="up" delay={index * 50}>
+                    <Link href={getLocalizedPath(`/du-an/${project.slug}`)}>
+                      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-[#0A3D62] flex flex-col cursor-pointer">
+                        <div className="relative w-full h-32 mb-4">
+                          <Image
+                            src={project.image || '/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png'}
+                            alt={project.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="px-4 pb-4 text-center">
+                          <h3 className="text-base font-semibold text-[#0A3D62] line-clamp-2">
+                            {project.title}
+                          </h3>
+                        </div>
                       </div>
-                      <div className="px-4 pb-4 text-center">
-                        <h3 className="text-base font-semibold text-[#0A3D62]">
-                          {project.name}
-                        </h3>
-                      </div>
-                    </div>
+                    </Link>
                   </ScrollAnimation>
                 ))}
               </div>
@@ -767,15 +735,15 @@ export default function Home() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="grid grid-cols-2 gap-4">
                     {[
-                      { src: '/images/bannner-1.jpg', className: 'w-48 h-48 rounded-xl shadow-2xl' },
-                      { src: '/images/banner2.png', className: 'w-40 h-40 rounded-xl shadow-2xl mt-8' },
-                      { src: '/images/banner3.png', className: 'w-40 h-40 rounded-xl shadow-2xl' },
-                      { src: '/images/bannner-1.jpg', className: 'w-48 h-48 rounded-xl shadow-2xl mt-8' },
+                      { src: '/images/hệ thống chiếu sáng.jpg', className: 'w-48 h-48 rounded-xl shadow-2xl', alt: 'Hệ thống chiếu sáng' },
+                      { src: '/images/hệ thống điện năng lượng mặt trời.jpg', className: 'w-40 h-40 rounded-xl shadow-2xl mt-8', alt: 'Hệ thống điện năng lượng mặt trời' },
+                      { src: '/images/Hệ thống điện.jpg', className: 'w-40 h-40 rounded-xl shadow-2xl', alt: 'Hệ thống điện' },
+                      { src: '/images/Hệ thống trạm biến áp.jpg', className: 'w-48 h-48 rounded-xl shadow-2xl mt-8', alt: 'Hệ thống trạm biến áp' },
                     ].map((img, index) => (
                       <div key={index} className={`relative ${img.className} overflow-hidden`}>
             <Image
                           src={img.src}
-                          alt={`Product ${index + 1}`}
+                          alt={img.alt}
                           fill
                           className="object-cover"
                         />

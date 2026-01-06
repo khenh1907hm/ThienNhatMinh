@@ -50,17 +50,22 @@ export default function ProjectsPage() {
 
   // Filter projects theo loại dự án dựa trên activeTab
   const getProjectsByTab = () => {
-    if (!activeTab || activeTab === 'featured') {
-      // Dự án tiêu biểu
-      return projects.filter((p) => p.project_type === 'tieu-bieu');
-    } else if (activeTab === 'inProgress') {
-      // Dự án đang thực hiện
-      return projects.filter((p) => p.project_type === 'dang-thuc-hien');
-    } else if (activeTab === 'completed') {
-      // Dự án đã thực hiện
-      return projects.filter((p) => p.project_type === 'da-thuc-hien');
-    }
-    return [];
+    return projects.filter((p) => {
+      const projectTypeStr = p.project_type || '';
+      const projectTypes = projectTypeStr ? projectTypeStr.split(',').map(t => t.trim()) : [];
+      
+      if (!activeTab || activeTab === 'featured') {
+        // Dự án tiêu biểu
+        return projectTypes.includes('tieu-bieu');
+      } else if (activeTab === 'inProgress') {
+        // Dự án đang thực hiện
+        return projectTypes.includes('dang-thuc-hien');
+      } else if (activeTab === 'completed') {
+        // Dự án đã thực hiện
+        return projectTypes.includes('da-thuc-hien');
+      }
+      return false;
+    });
   };
 
   return (
