@@ -15,6 +15,7 @@ interface Post {
   title: string;
   slug: string;
   category: string | null;
+  project_type: string | null;
   excerpt: string | null;
   image: string | null;
   content: string;
