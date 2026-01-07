@@ -4,6 +4,14 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import RichTextEditor from '../components/RichTextEditor';
+import {
+  DocumentTextIcon,
+  FolderOpenIcon,
+  UsersIcon,
+  ClipboardDocumentIcon,
+  ArrowLeftIcon,
+  ArrowRightOnRectangleIcon,
+} from '@heroicons/react/24/outline';
 
 interface Post {
   id: string;
@@ -25,10 +33,10 @@ export default function AdminDashboardPage() {
 
   // Menu items configuration
   const menuItems = [
-    { path: '/admin', icon: '🏠', title: 'Quản lý bài viết', label: 'Quản lý bài viết' },
-    { path: '/admin/projects', icon: '📁', title: 'Quản lý Dự án', label: 'Quản lý Dự án' },
-    { path: '/admin/recruitment', icon: '👥', title: 'Quản lý Tuyển dụng', label: 'Quản lý Tuyển dụng' },
-    { path: '/admin/cv-submissions', icon: '📄', title: 'Quản lý CV', label: 'Quản lý CV' },
+    { path: '/admin', icon: DocumentTextIcon, title: 'Quản lý bài viết', label: 'Quản lý bài viết' },
+    { path: '/admin/projects', icon: FolderOpenIcon, title: 'Quản lý Dự án', label: 'Quản lý Dự án' },
+    { path: '/admin/recruitment', icon: UsersIcon, title: 'Quản lý Tuyển dụng', label: 'Quản lý Tuyển dụng' },
+    { path: '/admin/cv-submissions', icon: ClipboardDocumentIcon, title: 'Quản lý CV', label: 'Quản lý CV' },
   ];
 
   // Posts state
@@ -301,64 +309,56 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-[#F6E8DC] flex">
       {/* Sidebar */}
-      <div className="w-[72px] md:w-20 bg-[#3A1308] text-white flex flex-col items-center py-6 space-y-6 relative z-50">
-        <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden">
-          <Image
-            src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
-            alt="Logo"
-            width={40}
-            height={40}
-            className="object-contain"
-          />
+      <div className="w-56 bg-[#3A1308] text-white flex flex-col py-6 space-y-6 relative z-50">
+        <div className="px-4">
+          <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden">
+            <Image
+              src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
+              alt="Logo"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+          </div>
         </div>
-        <nav className="flex-1 flex flex-col items-center space-y-4 mt-4 text-xs w-full">
+        <nav className="flex-1 flex flex-col space-y-2 mt-4 px-3">
           {menuItems.map((item) => {
             const isActive =
               pathname === item.path ||
               (item.path !== '/admin' && pathname.startsWith(item.path));
+            const IconComponent = item.icon;
             return (
-              <div key={item.path} className="relative group/item">
-                <button
-                  onClick={() => router.push(item.path)}
-                  className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-colors ${
-                    isActive
-                      ? 'bg-white text-[#3A1308] shadow-sm'
-                      : 'bg-white/10 hover:bg-white/20'
-                  }`}
-                  title={item.title}
-                >
-                  <span className="text-lg">{item.icon}</span>
-                </button>
-                <span className="absolute left-full ml-2 px-2 py-1 bg-[#3A1308] text-white text-xs font-medium whitespace-nowrap rounded opacity-0 group-hover/item:opacity-100 pointer-events-none transition-opacity duration-200 z-50 shadow-lg">
-                  {item.label}
-                </span>
-              </div>
+              <button
+                key={item.path}
+                onClick={() => router.push(item.path)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                  isActive
+                    ? 'bg-white text-[#3A1308] shadow-sm'
+                    : 'bg-white/10 hover:bg-white/20 text-white'
+                }`}
+                title={item.title}
+              >
+                <IconComponent className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>
+              </button>
             );
           })}
         </nav>
-        <div className="relative group/item">
+        <div className="px-3 space-y-2">
           <button
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-white"
             onClick={() => router.push('/')}
-            title="Về trang chủ"
           >
-            <span className="text-xs">⬅</span>
+            <ArrowLeftIcon className="w-5 h-5 flex-shrink-0" />
+            <span className="text-sm font-medium whitespace-nowrap">Về trang chủ</span>
           </button>
-          <span className="absolute left-full ml-2 px-2 py-1 bg-[#3A1308] text-white text-xs font-medium whitespace-nowrap rounded opacity-0 group-hover/item:opacity-100 pointer-events-none transition-opacity duration-200 z-50 shadow-lg">
-            Về trang chủ
-          </span>
-        </div>
-        <div className="relative group/item">
           <button
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-red-500/20 hover:bg-red-500/30 text-white transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 transition-colors text-white"
             onClick={handleLogout}
-            title="Đăng xuất"
           >
-            <span className="text-xs">🚪</span>
+            <ArrowRightOnRectangleIcon className="w-5 h-5 flex-shrink-0" />
+            <span className="text-sm font-medium whitespace-nowrap">Đăng xuất</span>
           </button>
-          <span className="absolute left-full ml-2 px-2 py-1 bg-[#3A1308] text-white text-xs font-medium whitespace-nowrap rounded opacity-0 group-hover/item:opacity-100 pointer-events-none transition-opacity duration-200 z-50 shadow-lg">
-            Đăng xuất
-          </span>
         </div>
       </div>
 
