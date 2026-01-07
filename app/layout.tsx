@@ -15,7 +15,9 @@ export const metadata: Metadata = {
   description: "Chuyên cung cấp các giải pháp điện năng lượng, hệ thống trạm biến áp và các dịch vụ kỹ thuật chuyên nghiệp",
   keywords: "điện năng lượng, trạm biến áp, hệ thống điện, thiên nhật minh",
   icons: {
-    icon: "/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png",
+    icon: "/icon.png",
+    apple: "/icon.png",
+    shortcut: "/icon.png",
   },
 };
 

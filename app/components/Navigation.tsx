@@ -66,10 +66,10 @@ const Navigation = () => {
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 md:h-24">
-          {/* Logo */}
+        <div className="flex items-center justify-between h-20 md:h-24 relative">
+          {/* Logo - Mobile: larger, Desktop: normal */}
           <Link href={getLocalizedPath('/')} className="flex items-center group">
-            <div className="flex relative w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 transform group-hover:scale-105 transition-transform">
+            <div className="flex relative w-28 h-28 md:w-24 md:h-24 lg:w-28 lg:h-28 transform group-hover:scale-105 transition-transform">
               <Image
                 src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
                 alt="Thiên Nhật Minh Logo"
@@ -108,15 +108,15 @@ const Navigation = () => {
             })}
           </div>
 
-          {/* Utilities */}
+          {/* Desktop Utilities */}
           <div className="hidden md:flex items-center">
             <LanguageSwitcher />
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile: Menu Button ở giữa */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            className="md:hidden absolute left-1/2 transform -translate-x-1/2 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
             aria-label="Toggle menu"
           >
             <svg
@@ -135,6 +135,11 @@ const Navigation = () => {
               )}
             </svg>
           </button>
+
+          {/* Mobile: Language Switcher ở góc phải */}
+          <div className="md:hidden flex items-center">
+            <LanguageSwitcher />
+          </div>
         </div>
 
         {/* Mobile Menu */}
