@@ -168,7 +168,7 @@ export default function ProjectsPage() {
               { number: '500+', label: t.projects.projectsCompleted },
               { number: '200+', label: t.projects.satisfiedClients },
               { number: '98%', label: t.projects.successRate },
-              { number: '15+', label: t.projects.yearsExperience },
+              { number: '20+', label: t.projects.yearsExperience },
             ].map((stat, index) => (
               <ScrollAnimation key={index} direction="up" delay={index * 100}>
                 <div>

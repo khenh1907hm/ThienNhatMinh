@@ -182,7 +182,7 @@ export default function AboutPage() {
             {[
               { number: '500+', label: t.about.projectsCompleted },
               { number: '200+', label: t.about.clients },
-              { number: '15+', label: t.about.yearsExperience },
+              { number: '20+', label: t.about.yearsExperience },
               { number: '50+', label: t.about.employees },
             ].map((stat, index) => (
               <ScrollAnimation key={index} direction="up" delay={index * 100}>

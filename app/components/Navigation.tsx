@@ -66,7 +66,7 @@ const Navigation = () => {
       }}
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 md:h-24 relative">
+        <div className="flex items-center h-20 md:h-24">
           {/* Mobile: Menu Button bên trái */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -90,19 +90,21 @@ const Navigation = () => {
             </svg>
           </button>
 
-          {/* Logo - Mobile: ở giữa, Desktop: bên trái */}
-          <Link href={getLocalizedPath('/')} className="flex items-center group absolute left-1/2 transform -translate-x-1/2 md:relative md:left-0 md:transform-none px-2 md:px-0">
-            <div className="flex relative w-24 h-24 sm:w-28 sm:h-28 md:w-24 md:h-24 lg:w-28 lg:h-28 transform group-hover:scale-105 transition-transform">
-              <Image
-                src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
-                alt="Thiên Nhật Minh Logo"
-                width={112}
-                height={112}
-                className="object-contain"
-                priority
-              />
-            </div>
-          </Link>
+          {/* Logo - Mobile: ở giữa (flex-1 + justify-center), Desktop: bên trái */}
+          <div className="flex-1 flex justify-center items-center md:flex-none md:justify-start">
+            <Link href={getLocalizedPath('/')} className="flex items-center justify-center group">
+              <div className="flex relative w-24 h-24 sm:w-28 sm:h-28 md:w-24 md:h-24 lg:w-28 lg:h-28 transform group-hover:scale-105 transition-transform">
+                <Image
+                  src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
+                  alt="Thiên Nhật Minh Logo"
+                  width={112}
+                  height={112}
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1 flex-1 justify-center">
