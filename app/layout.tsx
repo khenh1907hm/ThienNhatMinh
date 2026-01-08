@@ -15,8 +15,13 @@ export const metadata: Metadata = {
   description: "Chuyên cung cấp các giải pháp điện năng lượng, hệ thống trạm biến áp và các dịch vụ kỹ thuật chuyên nghiệp",
   keywords: "điện năng lượng, trạm biến áp, hệ thống điện, thiên nhật minh",
   icons: {
-    icon: "/icon.png",
-    apple: "/icon.png",
+    icon: [
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon.png", type: "image/png", sizes: "16x16" },
+    ],
+    apple: [
+      { url: "/icon.png", type: "image/png", sizes: "180x180" },
+    ],
     shortcut: "/icon.png",
   },
 };

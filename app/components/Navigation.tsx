@@ -67,8 +67,31 @@ const Navigation = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 md:h-24 relative">
-          {/* Logo - Mobile: larger, Desktop: normal */}
-          <Link href={getLocalizedPath('/')} className="flex items-center group">
+          {/* Mobile: Menu Button bên trái */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {isMobileMenuOpen ? (
+                <path d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+
+          {/* Logo - Mobile: ở giữa, Desktop: bên trái */}
+          <Link href={getLocalizedPath('/')} className="flex items-center group absolute left-1/2 transform -translate-x-1/2 md:relative md:left-0 md:transform-none">
             <div className="flex relative w-28 h-28 md:w-24 md:h-24 lg:w-28 lg:h-28 transform group-hover:scale-105 transition-transform">
               <Image
                 src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
@@ -112,29 +135,6 @@ const Navigation = () => {
           <div className="hidden md:flex items-center">
             <LanguageSwitcher />
           </div>
-
-          {/* Mobile: Menu Button ở giữa */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden absolute left-1/2 transform -translate-x-1/2 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
-            aria-label="Toggle menu"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              {isMobileMenuOpen ? (
-                <path d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
 
           {/* Mobile: Language Switcher ở góc phải */}
           <div className="md:hidden flex items-center">
