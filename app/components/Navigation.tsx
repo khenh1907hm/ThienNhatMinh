@@ -65,12 +65,12 @@ const Navigation = () => {
         backdropFilter: isScrolled ? 'blur(8px)' : 'none',
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 md:h-24 relative">
           {/* Mobile: Menu Button bên trái */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors flex-shrink-0"
             aria-label="Toggle menu"
           >
             <svg
@@ -91,8 +91,8 @@ const Navigation = () => {
           </button>
 
           {/* Logo - Mobile: ở giữa, Desktop: bên trái */}
-          <Link href={getLocalizedPath('/')} className="flex items-center group absolute left-1/2 transform -translate-x-1/2 md:relative md:left-0 md:transform-none">
-            <div className="flex relative w-28 h-28 md:w-24 md:h-24 lg:w-28 lg:h-28 transform group-hover:scale-105 transition-transform">
+          <Link href={getLocalizedPath('/')} className="flex items-center group absolute left-1/2 transform -translate-x-1/2 md:relative md:left-0 md:transform-none px-2 md:px-0">
+            <div className="flex relative w-24 h-24 sm:w-28 sm:h-28 md:w-24 md:h-24 lg:w-28 lg:h-28 transform group-hover:scale-105 transition-transform">
               <Image
                 src="/images/logo-Thien-Nhat-Minh-Co.-Ltd.-moi-ko-nen-2048x928.png"
                 alt="Thiên Nhật Minh Logo"
@@ -137,7 +137,7 @@ const Navigation = () => {
           </div>
 
           {/* Mobile: Language Switcher ở góc phải */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center flex-shrink-0">
             <LanguageSwitcher />
           </div>
         </div>
